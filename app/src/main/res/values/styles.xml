@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="colorPrimary">@color/dark_activity_actionbar</item>
+        <item name="colorPrimaryDark">@color/main_background</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorPressItem</item>
+        <item name="buttonStyle">@style/AppTheme_Widget_Button</item>
+        <item name="editTextStyle">@style/AppTheme_Widget_EditTextView</item>
+    </style>
+    <style name="AppTheme_AlertDialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
+    </style>
+    <style name="AppTheme_NoToolbar" parent="@style/AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppTheme_Widget_Button" parent="@style/Widget.AppCompat.Button">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:background">@drawable/button_selector</item>
+    </style>
+    <style name="AppTheme_Widget_EditTextView" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:textColorHint">@color/main_text_color</item>
+        <item name="android:background">@color/edit_background</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/text_cursor</item>
+    </style>
+</resources>

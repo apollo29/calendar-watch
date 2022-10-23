@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.whatcalendar">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+    <application
+        android:name="com.whatcalendar.Application"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.whatcalendar.activity.LinkWatchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.whatcalendar.activity.LinkWatchResultActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.whatcalendar.activity.WatchSettingsActivity"
+            android:label="@string/title_activity_watch_settings"
+            android:parentActivityName="com.whatcalendar.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar" />
+
+        <service
+            android:name="com.whatcalendar.service.BackgroundService"
+            android:enabled="true"
+            android:exported="true" />
+        <activity
+            android:name="com.whatcalendar.firmware.NotificationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar" />
+        <service
+            android:name="com.whatcalendar.firmware.DfuService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name="com.whatcalendar.events.CalendarEventsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+
+                <data android:scheme="content" />
+                <data android:host="com.android.calendar" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.whatcalendar.events.TimeSettingsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.whatcalendar.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar" />
+        <activity
+            android:name="com.whatcalendar.activity.InfoActivity"
+            android:label="@string/title_activity_info"
+            android:parentActivityName="com.whatcalendar.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar" />
+        <activity
+            android:name="com.whatcalendar.activity.CalendarsActivity"
+            android:label="@string/title_activity_calendars"
+            android:parentActivityName="com.whatcalendar.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar" />
+        <activity
+            android:name="com.whatcalendar.activity.WebViewActivity"
+            android:label="@string/title_activity_info"
+            android:parentActivityName="com.whatcalendar.activity.InfoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.whatcalendar.activity.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.whatcalendar.activity.WelcomeScreenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_NoToolbar"
+            android:windowSoftInputMode="adjustResize" />
+    </application>
+</manifest>

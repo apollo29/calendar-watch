@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Calendar Watch</string>
+    <string name="app_name">What?Calendar</string>
+
+    <string name="app_permission_request">Permission?</string>
+
+    <string name="gatt_service_name">What?Calendar</string>
+    <string name="gatt_service_description">What?Calendar Service</string>
+    <string name="gatt_service_running_notification">What?Calendar Service is running</string>
 </resources>

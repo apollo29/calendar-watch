@@ -7,4 +7,35 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="battery_level_charging">#21633f</color>
+    <color name="battery_level_disable">#45454e</color>
+    <color name="battery_level_end">#0086d6</color>
+    <color name="battery_level_middle">#4d407e</color>
+    <color name="battery_level_start">#6a3032</color>
+    <color name="battery_level_text_color">#7d7fa0</color>
+    <color name="button_normal">#2f3342</color>
+    <color name="button_pressed">#1b1427</color>
+    <color name="button_text_color">#7f828c</color>
+    <color name="colorAccent">#0086d6</color>
+    <color name="colorPressItem">#7f828c</color>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#303f9f</color>
+    <color name="dark_activity_actionbar">#2b2b36</color>
+    <color name="dark_activity_background">#212228</color>
+
+    <color name="edit_background">#2a2f3c</color>
+    <color name="fragment_background">#252633</color>
+    <color name="info_button_text_color">@color/second_text_color</color>
+    <color name="logo_color">#7d7fa0</color>
+    <color name="main_background">#161720</color>
+    <color name="main_background_end">#1f1d26</color>
+    <color name="main_background_start">#222339</color>
+    <color name="main_text_color">#7d7fa0</color>
+    <color name="ripple_material_light">#1f000000</color>
+    <color name="second_text_color">#7f828c</color>
+    <color name="secondary_text_default_material_light">#8a000000</color>
+    <color name="toolbar_color">#252633</color>
+    <color name="welcome_background_end">#1d1e26</color>
+    <color name="welcome_background_start">#292836</color>
 </resources>

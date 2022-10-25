@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    #Dimensions
+
+    Details:
+    * https://material.io/design/layout/responsive-layout-grid.html#columns-gutters-margins
+
+    ##Baseline
+    -->
+    <dimen name="base_half_gutter">4dp</dimen>
+    <dimen name="base_gutter">8dp</dimen>
+
+    <dimen name="base_margins">16dp</dimen>
+    <dimen name="base_padding">24dp</dimen>
+
+    <dimen name="base_keyline">72dp</dimen>
+    <dimen name="base_keyline_md">64dp</dimen>
+    <dimen name="base_keyline_sm">56dp</dimen>
+    <dimen name="base_keyline_xs">48dp</dimen>
+
+    <!--
+    ##Icons
+    Adequate space should surround system icons to allow legibility and touch. Icons of 24dp can use
+    a touch target of 48dp. Means that the Layout should have a dimension of 48dp and within
+    centered the icon with a dimension of 24dp => icon size 20dp plus padding of 2dp.
+    * https://material.io/design/iconography/system-icons.html#grid-keyline-shapes > Layout
+    * https://material.io/design/iconography/system-icons.html#system-icon-metrics > Space
+    -->
+    <dimen name="base_icon_space">48dp</dimen>
+    <dimen name="base_icon_size">20dp</dimen>
+    <dimen name="base_icon_padding">2dp</dimen>
+
+</resources>

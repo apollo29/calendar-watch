@@ -17,9 +17,11 @@ import java.util.*
 class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context) {
 
     val batteryLevel = MutableLiveData<BatteryInfo>()
+    val calibrateState = MutableLiveData<Boolean>()
 
     private var batteryLevelCharacteristic: BluetoothGattCharacteristic? = null
-    private var firmwareVersionCharacteristic: BluetoothGattCharacteristic? = null
+    private var calibrateCharacteristic: BluetoothGattCharacteristic? = null
+    private var updateTimeCharacteristic: BluetoothGattCharacteristic? = null
 
     override fun log(priority: Int, message: String) {
         if (BuildConfig.DEBUG || priority == Log.ERROR) {
@@ -31,16 +33,6 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
         return WhatCalendarWatchManagerGattCallback()
     }
 
-    /**
-     * The Button callback will be notified when a notification from Button characteristic
-     * has been received, or its data was read.
-     *
-     *
-     * If the data received are valid (single byte equal to 0x00 or 0x01), the
-     * [BlinkyButtonDataCallback.onButtonStateChanged] will be called.
-     * Otherwise, the [BlinkyButtonDataCallback.onInvalidDataReceived]
-     * will be called with the data received.
-     */
     private val batteryLevelCallback: BatteryLevelDataCallback =
         object : BatteryLevelDataCallback() {
             override fun onInvalidDataReceived(
@@ -55,6 +47,63 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
                 batteryLevel.value = batteryInfo
             }
         }
+
+    fun calibrateStart() {
+        Logger.d("calibrateStart")
+        calibrateState.postValue(true)
+        writeCharacteristic(
+            calibrateCharacteristic,
+            byteArrayOf(1),
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
+
+    fun calibrateCancel() {
+        Logger.d("calibrateCancel")
+        calibrateState.postValue(false)
+        writeCharacteristic(
+            calibrateCharacteristic,
+            byteArrayOf(0),
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
+
+    fun calibrateWatch(hour: Int, minute: Int, minuteA: Int, second: Int, secondA: Int) {
+        Logger.d("calibrateWatch")
+        writeCharacteristic(
+            calibrateCharacteristic,
+            byteArrayOf(
+                hour.toByte(),
+                minute.toByte(),
+                minuteA.toByte(),
+                second.toByte(),
+                secondA.toByte()
+            ),
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+
+        updateTime()
+    }
+
+    private fun updateTime() {
+        Logger.d("updateTime")
+        val now = Calendar.getInstance()
+        val value = byteArrayOf(
+            (now[1] % 100).toByte(),
+            (now[2] + 1).toByte(),
+            now[5].toByte(),
+            now[11].toByte(),
+            now[12].toByte(),
+            now[13].toByte(),
+            0,
+            0
+        )
+        writeCharacteristic(
+            updateTimeCharacteristic,
+            value,
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
 
     /**
      * BluetoothGatt callbacks object.
@@ -72,9 +121,14 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
             if (service != null) {
                 batteryLevelCharacteristic =
                     service.getCharacteristic(UUID_CHARACTERISTIC_BATTERY_LEVEL)
+                calibrateCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_CALIBRATE)
+                updateTimeCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_TIME)
             }
-            val supported = batteryLevelCharacteristic != null
-            return supported
+            return batteryLevelCharacteristic != null &&
+                    calibrateCharacteristic != null &&
+                    updateTimeCharacteristic != null
         }
 
         override fun onServicesInvalidated() {
@@ -88,5 +142,10 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
             UUID.fromString("67E40001-5C68-D803-BF31-F83F2B6585FA")
         val UUID_CHARACTERISTIC_BATTERY_LEVEL =
             UUID.fromString("67E4000D-5C68-D803-BF31-F83F2B6585FA")
+
+        val UUID_CHARACTERISTIC_CALIBRATE =
+            UUID.fromString("67E40009-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_UPDATE_TIME =
+            UUID.fromString("67E40002-5C68-D803-BF31-F83F2B6585FA")
     }
 }

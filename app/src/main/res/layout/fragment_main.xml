@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/main_screen_background"
         android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:padding="@dimen/base_margins">
+
+        <TextView
+            android:id="@+id/text_watch_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:color="@color/white"
+            android:text="New Text"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            tools:visibility="visible" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/scan_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/text_watch_id"
             android:text="scan start" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/scan_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/scan_start"
             android:text="scan stop" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/battery_level"
+            android:id="@+id/calibrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="battery level" />
+            android:layout_below="@id/scan_stop"
+            android:text="calibrate" />
 
         <TextView
             android:id="@+id/battery_level_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="n/a"/>
+            android:layout_below="@id/calibrate"
+            android:color="@color/white"
+            android:text="n/a" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </layout>

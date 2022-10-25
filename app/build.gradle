@@ -79,4 +79,5 @@ dependencies {
     // other
     implementation 'com.orhanobut:logger:2.2.0'
     implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 }

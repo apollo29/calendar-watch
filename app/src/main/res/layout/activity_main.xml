@@ -19,11 +19,13 @@
             app:elevation="0dp"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:contentInsetStartWithNavigation="0dp" />
+                app:contentInsetStartWithNavigation="0dp"
+                app:title="@string/app_name"
+                style="?attr/toolbarStyle" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

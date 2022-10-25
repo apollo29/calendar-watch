@@ -8,7 +8,7 @@ import no.nordicsemi.android.ble.ConnectRequest
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val manager = WhatCalendarWatchManager(application)
+    val manager = WhatCalendarWatchManager(application)
 
     private var device: BluetoothDevice? = null
     private var connectRequest: ConnectRequest? = null

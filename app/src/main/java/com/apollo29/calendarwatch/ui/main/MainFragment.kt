@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.ble.GattService.Companion.RSSI_VALUE
 import com.apollo29.calendarwatch.databinding.DialogCalibrateBinding
 import com.apollo29.calendarwatch.databinding.FragmentMainBinding
@@ -106,9 +105,9 @@ class MainFragment : Fragment() {
             Logger.d("Cancel")
             viewModel.manager.calibrateCancel()
         }
-        builder.setPositiveButton(R.string.ok) { dialogInterface, _ ->
-            //WatchSettingsActivity.this.mBackgroundService.calibrateWatch(pickerHour.getValue(), pickerMinute.getValue(), 0, pickerSecond.getValue(), 0);
-            //
+        val dialog = builder.create()
+
+        calibrateBinding.buttonOk.setOnClickListener {
             val hour = calibrateBinding.pickerHour.value
             val minute = calibrateBinding.pickerMinute.value
             val second = calibrateBinding.pickerSecond.value
@@ -119,18 +118,17 @@ class MainFragment : Fragment() {
                 calibrateBinding.pickerSecond.value
             )
             viewModel.manager.calibrateWatch(hour, minute, 0, second, 0)
-            dialogInterface.dismiss()
+            dialog.dismiss()
         }
-        builder.setNegativeButton(R.string.cancel) { dialogInterface, _ ->
+        calibrateBinding.buttonCancel.setOnClickListener {
             Logger.d("Cancel")
             viewModel.manager.calibrateCancel()
-            dialogInterface.cancel()
+            dialog.cancel()
         }
 
         calibrateBinding.pickerHour.value = now.get(11)
         calibrateBinding.pickerMinute.value = now.get(12)
 
-        builder.create()
-        builder.show()
+        dialog.show()
     }
 }

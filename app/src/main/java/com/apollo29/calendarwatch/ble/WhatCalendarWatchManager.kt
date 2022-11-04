@@ -22,6 +22,8 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
     private var batteryLevelCharacteristic: BluetoothGattCharacteristic? = null
     private var calibrateCharacteristic: BluetoothGattCharacteristic? = null
     private var updateTimeCharacteristic: BluetoothGattCharacteristic? = null
+    private var flexibleModeCharacteristic: BluetoothGattCharacteristic? = null
+    private var airplaneModeCharacteristic: BluetoothGattCharacteristic? = null
 
     override fun log(priority: Int, message: String) {
         if (BuildConfig.DEBUG || priority == Log.ERROR) {
@@ -47,6 +49,8 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
                 batteryLevel.value = batteryInfo
             }
         }
+
+    // CALIBRATE
 
     fun calibrateStart() {
         Logger.d("calibrateStart")
@@ -105,6 +109,51 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
         ).enqueue()
     }
 
+    // endregion
+
+    // Flexible Mode
+
+    fun setFlexibleMode() {
+        val value = byteArrayOf(0)
+        Logger.d("flexibleMode")
+        writeCharacteristic(
+            flexibleModeCharacteristic,
+            value,
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
+
+    fun setFixedMode(fixedModeHour: Int) {
+        val value = byteArrayOf(1, fixedModeHour.toByte())
+        Logger.d("flexibleMode %s", fixedModeHour)
+        writeCharacteristic(
+            flexibleModeCharacteristic,
+            value,
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
+
+    // endregion
+
+    // Airplane Mode
+
+    fun setAirplaneMode(airplane: Boolean) {
+        var b: Byte = 1
+        val value = ByteArray(1)
+        if (!airplane) {
+            b = 0
+        }
+        value[0] = b
+        Logger.d("airplaneMode %s", airplane)
+        writeCharacteristic(
+            airplaneModeCharacteristic,
+            value,
+            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        ).enqueue()
+    }
+
+    // endregion
+
     /**
      * BluetoothGatt callbacks object.
      */
@@ -125,10 +174,16 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
                     service.getCharacteristic(UUID_CHARACTERISTIC_CALIBRATE)
                 updateTimeCharacteristic =
                     service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_TIME)
+                flexibleModeCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_SWITCH_MODE)
+                airplaneModeCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_AIRPLANE_MODE)
             }
             return batteryLevelCharacteristic != null &&
                     calibrateCharacteristic != null &&
-                    updateTimeCharacteristic != null
+                    updateTimeCharacteristic != null &&
+                    flexibleModeCharacteristic != null &&
+                    airplaneModeCharacteristic != null
         }
 
         override fun onServicesInvalidated() {
@@ -147,5 +202,10 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
             UUID.fromString("67E40009-5C68-D803-BF31-F83F2B6585FA")
         val UUID_CHARACTERISTIC_UPDATE_TIME =
             UUID.fromString("67E40002-5C68-D803-BF31-F83F2B6585FA")
+
+        val UUID_CHARACTERISTIC_SWITCH_MODE =
+            UUID.fromString("67E40008-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_AIRPLANE_MODE =
+            UUID.fromString("67E40010-5C68-D803-BF31-F83F2B6585FA")
     }
 }

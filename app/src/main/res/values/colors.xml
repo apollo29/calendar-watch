@@ -14,6 +14,7 @@
     <color name="battery_level_middle">#4d407e</color>
     <color name="battery_level_start">#6a3032</color>
     <color name="battery_level_text_color">#7d7fa0</color>
+
     <color name="button_normal">#2f3342</color>
     <color name="button_pressed">#1b1427</color>
     <color name="button_text_color">#7f828c</color>

@@ -1,6 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
-    <style name="Theme.CalendarWatch" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.CalendarWatch" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -10,7 +10,7 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/main_background</item>
+        <item name="android:statusBarColor">@color/main_background_start</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -37,6 +37,14 @@
         <item name="textAppearanceCaption">@style/Theme.CalendarWatch.TextAppearance.Caption</item>
         <item name="textAppearanceOverline">@style/Theme.CalendarWatch.TextAppearance.Overline</item>
 
+        <!-- Custom Typography -->
+        <item name="chargingTextStyle">@style/Theme.CalendarWatch.Custom.TextAppearance.Charging</item>
+
+        <!-- Buttons -->
+        <item name="buttonStyle">@style/Theme.CalendarWatch.Button</item>
+        <item name="materialButtonStyle">@style/Theme.CalendarWatch.Button</item>
+        <item name="materialButtonTextStyle">@style/Theme.CalendarWatch.TextButton</item>
+
     </style>
 
     <!--
@@ -50,16 +58,51 @@
         <item name="android:tint">@color/main_text_color</item>
         <item name="iconTint">@color/main_text_color</item>
         <item name="actionMenuTextColor">@color/main_text_color</item>
-        <item name="titleTextAppearance">@style/Theme.CalendarWatch.TitleTextStyle</item>
+        <item name="titleTextAppearance">@style/Theme.CalendarWatch.TopAppBar.TitleTextStyle</item>
         <item name="titleTextColor">@color/main_text_color</item>
         <item name="color">@color/main_text_color</item>
         <!-- Title text gravity -->
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="Theme.CalendarWatch.TitleTextStyle" parent="@style/Theme.CalendarWatch.TextAppearance.Headline6">
-        <item name="android:textFontWeight">700</item>
+    <style name="Theme.CalendarWatch.TopAppBar.TitleTextStyle" parent="@style/Theme.CalendarWatch.TextAppearance.Headline6">
+        <item name="android:textFontWeight">500</item>
         <item name="color">@color/main_text_color</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
+    <!--
+    #Buttons
+
+    ##Contained Buttons
+    -->
+    <style name="Theme.CalendarWatch.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colors_button_normal</item>
+        <item name="iconTint">@color/main_text_color</item>
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="cornerRadius">0dp</item>
+    </style>
+
+    <!--
+    ##Text Buttons
+    -->
+    <style name="Theme.CalendarWatch.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="iconTint">@color/main_text_color</item>
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="backgroundTint">@color/colors_button_normal</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="cornerRadius">0dp</item>
+    </style>
+
+    <!--
+    #Custom Typography
+
+    ##Charging Text Style
+    -->
+    <style name="Theme.CalendarWatch.Custom.TextAppearance.Charging" parent="Theme.CalendarWatch.TextAppearance.Headline6">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/battery_level_text_color</item>
+        <item name="android:textFontWeight">200</item>
+    </style>
 </resources>

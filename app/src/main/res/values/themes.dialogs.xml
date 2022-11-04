@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+    //
+    // Fullscreen Dialog Theme
+    //
+    -->
+
+    <style name="Theme.CalendarWatch.FullScreenDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <!-- Fullscreen Dialog -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/main_background_start</item>
+        <!-- Customize your theme here. -->
+
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/Theme.CalendarWatch.TextAppearance.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/Theme.CalendarWatch.TextAppearance.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/Theme.CalendarWatch.TextAppearance.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/Theme.CalendarWatch.TextAppearance.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/Theme.CalendarWatch.TextAppearance.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/Theme.CalendarWatch.TextAppearance.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/Theme.CalendarWatch.TextAppearance.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/Theme.CalendarWatch.TextAppearance.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/Theme.CalendarWatch.TextAppearance.Body1</item>
+        <item name="textAppearanceBody2">@style/Theme.CalendarWatch.TextAppearance.Body2</item>
+        <item name="textAppearanceButton">@style/Theme.CalendarWatch.TextAppearance.Button</item>
+        <item name="textAppearanceCaption">@style/Theme.CalendarWatch.TextAppearance.Caption</item>
+        <item name="textAppearanceOverline">@style/Theme.CalendarWatch.TextAppearance.Overline</item>
+
+    </style>
+
+    <!-- endregion -->
+
+</resources>

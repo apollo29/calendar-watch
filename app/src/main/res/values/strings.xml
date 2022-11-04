@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">What?Calendar</string>
+    <string name="app_name">What? Calendar</string>
 
     <string name="app_permission_request">Permission?</string>
 
-    <string name="gatt_service_name">What?Calendar</string>
-    <string name="gatt_service_description">What?Calendar Service</string>
-    <string name="gatt_service_running_notification">What?Calendar Service is running</string>
+    <string name="gatt_service_name">What? Calendar</string>
+    <string name="gatt_service_description">What? Calendar Service</string>
+    <string name="gatt_service_running_notification">What? Calendar Service is running</string>
 
     <string name="activity_calendars_hint">All calendars from your mobile device\nare shown as on by default</string>
     <string name="activity_title_calendars">SELECT CALENDARS</string>
@@ -20,12 +20,10 @@
     <string name="button_pair_watch">PAIR WATCH</string>
     <string name="calibration">Calibrate your watch</string>
     <string name="calibration_text">Enter the current position of the hands on your watch</string>
-    <string name="cancel">CANCEL</string>
-    <string name="character_counter_pattern">%1$d / %2$d</string>
     <string name="close">CLOSE</string>
     <string name="confirm_message_account_logout">You really want to logout from this account?</string>
     <string name="connect_your_watch">CONNECT YOUR WATCH</string>
-    <string name="connect_your_watch_press">Now press pair your watch...</string>
+    <string name="connect_your_watch_press">Now press pair your watch…</string>
     <string name="connect_your_watch_text">Now we are ready to connect your Watch. Ensure that the watch is laying flat next to your mobile phone. Activate Bluetooth on your phone [Bluetooth settings], and triple tap the watch, you will be rewarded with 3 flashes.</string>
     <string name="connect_your_watch_text_second">Please try again and push the pair button. If this didn’t help, please email the Serial Number of your watch to support@whatwatch.com. In return you will get the MAC address for your Calendar Watch. Please enter this below and push the pair button.</string>
     <string name="content_description_account_logo">Account logo</string>
@@ -61,7 +59,7 @@
     <string name="dialog_msg_update_done">Your watch has been updated successfully</string>
     <string name="dialog_msg_update_error">An error occurred during the upgrade process. Please contact customer support.</string>
     <string name="dialog_msg_update_no">No firmware update available</string>
-    <string name="dialog_msg_update_progress">The update is in progress...</string>
+    <string name="dialog_msg_update_progress">The update is in progress…</string>
     <string name="dialog_title_attention">Attention</string>
     <string name="dialog_title_set_start_hour">Set start hour</string>
     <string name="disconnected_text">Not\nconnected</string>
@@ -73,9 +71,7 @@
     <string name="error_password_must_not_be_empty">Password must not be empty</string>
     <string name="error_watch_id_must_not_be_empty">Watch ID must not be empty</string>
     <string name="getting_started">GETTING STARTED</string>
-    <string name="getting_started_text">Before we got started please ensure the watch\nis charged and lay it flat next to your phone.\nNow we need to register your Calendar Watch...</string>
-    <string name="googleApiClientId">509038642752-v79q20hk3pk273uv95b0b0mfpjl9prgo.apps.googleusercontent.com</string>
-    <string name="googleApiClientSecret">VbYEVdfP9QPpEhoWC3L1PIcV</string>
+    <string name="getting_started_text">Before we got started please ensure the watch\nis charged and lay it flat next to your phone.\nNow we need to register your Calendar Watch…</string>
     <string name="hint_email">Email</string>
     <string name="hint_email_address">Enter your email address:</string>
     <string name="hint_enter_watch_id">Leave it empty for auto-pairing</string>

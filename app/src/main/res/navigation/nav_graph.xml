@@ -53,4 +53,10 @@
         android:name="com.apollo29.calendarwatch.ui.settings.SettingsDialogFragment"
         android:label="@string/menu_watch_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_calendar"
+        android:name="com.apollo29.calendarwatch.ui.calendar.CalendarFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_calendar" />
 </navigation>

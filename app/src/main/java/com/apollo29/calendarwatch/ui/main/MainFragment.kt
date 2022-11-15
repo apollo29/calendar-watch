@@ -36,7 +36,6 @@ class MainFragment : Fragment() {
         updateBatteryView()
 
         viewModel.batteryLevel().observe(viewLifecycleOwner) {
-            binding.batteryLevelInfo.text = it.toString()
             updateBatteryView(it)
         }
 

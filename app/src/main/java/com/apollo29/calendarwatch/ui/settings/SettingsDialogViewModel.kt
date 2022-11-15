@@ -10,9 +10,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsDialogViewModel @Inject constructor(@ApplicationContext context: Context) :
+class SettingsDialogViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    val manager: WhatCalendarWatchManager
+) :
     ViewModel() {
-    val manager = WhatCalendarWatchManager(context)
     val preferences = Preferences(context)
 
     val switchModeValue = MutableLiveData(preferences.switchModeSwitch())

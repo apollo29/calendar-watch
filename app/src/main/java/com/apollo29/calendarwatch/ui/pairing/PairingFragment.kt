@@ -15,11 +15,13 @@ import com.apollo29.calendarwatch.ble.GattService
 import com.apollo29.calendarwatch.databinding.FragmentGettingStartedBinding
 import com.apollo29.calendarwatch.ui.main.MainViewModel
 import com.orhanobut.logger.Logger
+import dagger.hilt.android.AndroidEntryPoint
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
-import no.nordicsemi.android.support.v18.scanner.ScanSettings
 
+
+@AndroidEntryPoint
 class PairingFragment : Fragment() {
     private var _binding: FragmentGettingStartedBinding? = null
     private val binding get() = _binding!!
@@ -27,12 +29,6 @@ class PairingFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
 
     private val scanner = BluetoothLeScannerCompat.getScanner()
-    private val settings: ScanSettings = ScanSettings.Builder()
-        .setLegacy(false)
-        .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-        .setReportDelay(5000)
-        .setUseHardwareBatchingIfSupported(true)
-        .build()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +54,6 @@ class PairingFragment : Fragment() {
     private fun startScanning() {
         binding.progressPairWatch.visibility = VISIBLE
         Logger.d("start scanning")
-        //scanner.startScan(mutableListOf(), settings, leScanCallback)
         scanner.startScan(leScanCallback)
     }
 

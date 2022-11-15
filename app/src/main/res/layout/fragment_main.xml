@@ -34,31 +34,6 @@
                 android:src="@drawable/product_name" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/header"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_watch_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:color="@color/white"
-                android:text="New Text"
-                android:textSize="14sp"
-                android:visibility="invisible"
-                tools:visibility="visible" />
-
-            <TextView
-                android:id="@+id/battery_level_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:color="@color/white"
-                android:text="n/a" />
-
-        </LinearLayout>
-
         <com.apollo29.calendarwatch.view.BatteryLevelView
             android:id="@+id/view_battery_level"
             android:layout_width="@dimen/battery_level_view_size"

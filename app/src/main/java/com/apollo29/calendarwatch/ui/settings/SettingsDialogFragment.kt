@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.databinding.DialogAlertBinding
 import com.apollo29.calendarwatch.databinding.DialogCalibrateBinding
@@ -48,7 +49,7 @@ class SettingsDialogFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbarIcon.setOnClickListener {
-            requireActivity().onBackPressed()
+            findNavController().navigate(R.id.nav_main)
         }
 
         binding.fixedButton.setOnClickListener(onSwitchModeClickListener)
@@ -94,18 +95,36 @@ class SettingsDialogFragment : Fragment() {
             }
         }
 
+        // calibrate
         binding.buttonCalibrateWatch.setOnClickListener {
             calibrate()
         }
 
+        // manual sync
+        binding.buttonManualSync.setOnClickListener {
+            viewModel.manager.manualSync()
+        }
+
+        // select calendars
+        binding.buttonCalendars.setOnClickListener {
+            findNavController().navigate(R.id.nav_calendar)
+        }
+
+        // all day events
+
+        // virbate alert
+
+        // air plane mode
         binding.switchAirplane.setOnCheckedChangeListener { _, value ->
             viewModel.airplaneMode(value)
         }
 
+        // reset
         binding.buttonReset.setOnClickListener {
             viewModel.reset()
         }
 
+        // unpair
         binding.buttonForget.setOnClickListener {
             unpair()
         }

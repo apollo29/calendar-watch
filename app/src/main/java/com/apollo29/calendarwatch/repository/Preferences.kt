@@ -166,7 +166,7 @@ class Preferences(context: Context) {
     fun calendarEnabled(id: String): Boolean {
         return pref.getBoolean(
             PREF_NAME_CALENDAR_ENABLED + id,
-            true
+            false
         )
     }
 

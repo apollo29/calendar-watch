@@ -3,12 +3,12 @@ package com.apollo29.calendarwatch.ui.welcome
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.apollo29.calendarwatch.databinding.WelcomeImageItemBinding
+import com.apollo29.calendarwatch.databinding.ViewWelcomeImageItemBinding
 
 class WelcomeImageAdapter(private val imageList: List<Int>) :
     RecyclerView.Adapter<WelcomeImageAdapter.ViewPagerViewHolder>() {
 
-    inner class ViewPagerViewHolder(val binding: WelcomeImageItemBinding) :
+    inner class ViewPagerViewHolder(val binding: ViewWelcomeImageItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun setData(image: Int) {
@@ -18,7 +18,7 @@ class WelcomeImageAdapter(private val imageList: List<Int>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerViewHolder {
-        val binding = WelcomeImageItemBinding.inflate(
+        val binding = ViewWelcomeImageItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false

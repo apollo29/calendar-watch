@@ -64,10 +64,12 @@ class WhatCalendarWatchManager @Inject constructor(
 
     var eventsChangedCallback: EventsChangedCallback = object : EventsChangedCallback() {
         override fun onEventsChanged() {
+            Logger.d("onEventsChanged")
             updateAllDayPatterns()
         }
 
         override fun onTimeChanged() {
+            Logger.d("onTimeChanged")
             onTimeChanged = true
             updateAllDayPatterns()
         }
@@ -346,6 +348,16 @@ class WhatCalendarWatchManager @Inject constructor(
     // endregion
 
     // Alerts
+
+    fun setAlertsEnabled(enabled: Boolean) {
+        if (enabled) {
+            updateAllDayPatterns()
+            return
+        }
+        alerts = ArrayList<Byte>()
+        preferences.alerts(alerts)
+        clear(2)
+    }
 
     fun updateAlerts() {
         Logger.d("updateAlerts")

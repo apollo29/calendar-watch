@@ -39,6 +39,24 @@ class SettingsDialogViewModel @Inject constructor(
         manager.setAirplaneMode(value)
     }
 
+    fun allDayMode(value: Boolean) {
+        preferences.allDayEventsInfo(value)
+        manager.updateAllDayPatterns()
+    }
+
+    fun allDayMode(): Boolean {
+        return preferences.flightModeSwitch()
+    }
+
+    fun vibrateSwitch(value: Boolean) {
+        preferences.vibrateSwitch(value)
+        manager.setAlertsEnabled(value)
+    }
+
+    fun vibrateSwitch(): Boolean {
+        return preferences.vibrateSwitch()
+    }
+
     fun airplaneModeValue(): Boolean {
         return preferences.flightModeSwitch()
     }

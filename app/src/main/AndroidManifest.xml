@@ -34,6 +34,26 @@
             android:name=".ble.GattService"
             android:description="@string/gatt_service_description"
             android:exported="false" />
+
+        <receiver
+            android:name=".repository.CalendarEventsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+
+                <data android:scheme="content" />
+                <data android:host="com.android.calendar" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".repository.TimeSettingsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

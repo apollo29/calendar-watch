@@ -111,10 +111,19 @@ class SettingsDialogFragment : Fragment() {
         }
 
         // all day events
+        binding.switchAllday.isChecked = viewModel.allDayMode()
+        binding.switchAllday.setOnCheckedChangeListener { _, value ->
+            viewModel.allDayMode(value)
+        }
 
         // virbate alert
+        binding.switchVibrate.isChecked = viewModel.vibrateSwitch()
+        binding.switchVibrate.setOnCheckedChangeListener { _, value ->
+            viewModel.vibrateSwitch(value)
+        }
 
         // air plane mode
+        binding.switchAirplane.isChecked = viewModel.airplaneModeValue()
         binding.switchAirplane.setOnCheckedChangeListener { _, value ->
             viewModel.airplaneMode(value)
         }

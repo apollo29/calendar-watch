@@ -14,6 +14,7 @@ import com.apollo29.calendarwatch.repository.Preferences
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import no.nordicsemi.android.ble.ConnectRequest
+import no.nordicsemi.android.ble.callback.profile.ProfileDataCallback
 import no.nordicsemi.android.ble.data.Data
 import no.nordicsemi.android.ble.livedata.ObservableBleManager
 import org.apache.commons.lang3.time.DateUtils
@@ -32,10 +33,8 @@ class WhatCalendarWatchManager @Inject constructor(
 
     val batteryLevel = MutableLiveData<BatteryInfo>()
     val calibrateState = MutableLiveData<Boolean>()
-    val updating = MutableLiveData<Boolean>()
 
-    var forgetDevice = true
-
+    private var forgetDevice = true
     private var device: BluetoothDevice? = null
     private var connectRequest: ConnectRequest? = null
 
@@ -53,6 +52,8 @@ class WhatCalendarWatchManager @Inject constructor(
     private var patternCurrentCharacteristic: BluetoothGattCharacteristic? = null
     private var patternTomorrowCharacteristic: BluetoothGattCharacteristic? = null
     private var patternDayAfterTomorrowCharacteristic: BluetoothGattCharacteristic? = null
+    private var refreshCharacteristic: BluetoothGattCharacteristic? = null
+    private var updateRequestCharacteristic: BluetoothGattCharacteristic? = null
 
     private var allDaysPattern = CharArray(288)
     private var currentDayPattern = CharArray(96)
@@ -87,16 +88,31 @@ class WhatCalendarWatchManager @Inject constructor(
 
     private val batteryLevelCallback: BatteryLevelDataCallback =
         object : BatteryLevelDataCallback() {
-            override fun onInvalidDataReceived(
-                device: BluetoothDevice,
-                data: Data
-            ) {
+            override fun onInvalidDataReceived(device: BluetoothDevice, data: Data) {
                 log(Log.WARN, "Invalid data received: $data")
             }
 
             override fun onStateChanged(device: BluetoothDevice, batteryInfo: BatteryInfo) {
                 log(Log.INFO, "data received: $batteryInfo")
-                batteryLevel.value = batteryInfo
+                batteryLevel.postValue(batteryInfo)
+            }
+        }
+
+    private val refreshCallback: ProfileDataCallback =
+        ProfileDataCallback { _, _ ->
+            Logger.d("Notify REFRESH!")
+            updatePatternTask()
+        }
+
+    private val updateRequestCallback: ProfileDataCallback =
+        ProfileDataCallback { _, data ->
+            val value = data.value!![0].toInt()
+            Logger.d("Notify UPDATE REQUEST! command: $value")
+            if (value == 0) {
+                reset()
+                updatePatternTask()
+            } else if (value == 1) {
+                updateTime()
             }
         }
 
@@ -383,22 +399,6 @@ class WhatCalendarWatchManager @Inject constructor(
         ).enqueue()
     }
 
-    fun toHex(value: ByteArray): String {
-        var hexValue: String
-        val sb = StringBuilder()
-        for (b in value) {
-            val hex = Integer.toHexString(b.toInt())
-            hexValue = when (hex.length) {
-                0 -> "00"
-                1 -> "0$hex"
-                2 -> hex
-                else -> hex.substring(hex.length - 2, hex.length)
-            }
-            sb.append(hexValue.uppercase(Locale.getDefault())).append(' ')
-        }
-        return sb.toString()
-    }
-
     // endregion
 
     // util
@@ -422,6 +422,14 @@ class WhatCalendarWatchManager @Inject constructor(
             setNotificationCallback(batteryLevelCharacteristic).with(batteryLevelCallback)
             readCharacteristic(batteryLevelCharacteristic).with(batteryLevelCallback).enqueue()
             enableNotifications(batteryLevelCharacteristic).enqueue()
+
+            setNotificationCallback(refreshCharacteristic).with(refreshCallback)
+            readCharacteristic(refreshCharacteristic).with(refreshCallback).enqueue()
+            enableNotifications(refreshCharacteristic).enqueue()
+
+            setNotificationCallback(updateRequestCharacteristic).with(updateRequestCallback)
+            readCharacteristic(updateRequestCharacteristic).with(updateRequestCallback).enqueue()
+            enableNotifications(updateRequestCharacteristic).enqueue()
         }
 
         public override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
@@ -451,6 +459,11 @@ class WhatCalendarWatchManager @Inject constructor(
                     service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_TOMORROW)
                 patternDayAfterTomorrowCharacteristic =
                     service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW)
+
+                refreshCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_REFRESH)
+                updateRequestCharacteristic =
+                    service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_REQUEST)
             }
             return batteryLevelCharacteristic != null &&
                     calibrateCharacteristic != null &&
@@ -462,7 +475,9 @@ class WhatCalendarWatchManager @Inject constructor(
                     alertsCharacteristic != null &&
                     patternCurrentCharacteristic != null &&
                     patternTomorrowCharacteristic != null &&
-                    patternDayAfterTomorrowCharacteristic != null
+                    patternDayAfterTomorrowCharacteristic != null &&
+                    refreshCharacteristic != null &&
+                    updateRequestCharacteristic != null
         }
 
         override fun onServicesInvalidated() {
@@ -472,7 +487,6 @@ class WhatCalendarWatchManager @Inject constructor(
 
     private inner class UpdatePatternsTask : Runnable {
         override fun run() {
-            updating.postValue(true)
             var eventStartMinute: Int
             var eventStartSector: Int
             var eventEndSector: Int

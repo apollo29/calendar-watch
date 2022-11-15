@@ -29,6 +29,7 @@
     <color name="fragment_background">#252633</color>
     <color name="info_button_text_color">@color/second_text_color</color>
     <color name="logo_color">#7d7fa0</color>
+    <color name="welcome_background">#d9dadc</color>
     <color name="main_background">#161720</color>
     <color name="main_background_end">#1f1d26</color>
     <color name="main_background_start">#222339</color>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fragment_background"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/base_margins"
+            android:text="@string/dialog_title_set_start_hour"
+            android:textAllCaps="true" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="18dp"
+            android:background="@drawable/divider" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="200dp"
+                android:background="@drawable/picker_divider" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/picker_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants"
+                app:np_max="12"
+                app:np_min="1"
+                app:np_selectedTextColor="@color/main_text_color"
+                app:np_textColor="@color/main_text_color" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="200dp"
+                android:background="@drawable/picker_divider" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_margins"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_cancel"
+                style="?attr/materialButtonTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/android:cancel" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_ok"
+                style="?attr/materialButtonTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/android:ok" />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

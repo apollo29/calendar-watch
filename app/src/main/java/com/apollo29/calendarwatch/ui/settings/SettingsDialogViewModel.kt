@@ -1,6 +1,5 @@
 package com.apollo29.calendarwatch.ui.settings
 
-import android.bluetooth.BluetoothDevice
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,6 @@ import com.apollo29.calendarwatch.ble.WhatCalendarWatchManager
 import com.apollo29.calendarwatch.repository.Preferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import no.nordicsemi.android.ble.ConnectRequest
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,31 +15,51 @@ class SettingsDialogViewModel @Inject constructor(@ApplicationContext context: C
     val manager = WhatCalendarWatchManager(context)
     val preferences = Preferences(context)
 
-    private var device: BluetoothDevice? = null
-    private var connectRequest: ConnectRequest? = null
-
     val switchModeValue = MutableLiveData(preferences.switchModeSwitch())
 
-    fun connect(device: BluetoothDevice) {
-        // Prevent from calling again when called again (screen orientation changed).
-        if (this.device == null) {
-            this.device = device
-            reconnect()
+    fun switchMode(value: Boolean, hour: Int?) {
+        switchModeValue.postValue(value)
+        preferences.switchModeSwitch(value)
+        if (value && hour != null) {
+            preferences.fixedModeValue(hour)
+            manager.setFixedMode(hour)
+        } else {
+            manager.setFlexibleMode()
         }
     }
 
-    /**
-     * Reconnects to previously connected device.
-     * If this device was not supported, its services were cleared on disconnection, so
-     * reconnection may help.
-     */
-    fun reconnect() {
-        if (device != null) {
-            connectRequest = manager.connect(device!!)
-                .retry(3, 100)
-                .useAutoConnect(false)
-                .then { connectRequest = null }
-            connectRequest!!.enqueue()
+    fun fixedModeValue(): Int {
+        return preferences.fixedModeValue()
+    }
+
+    fun airplaneMode(value: Boolean) {
+        preferences.flightModeSwitch(value)
+        manager.setAirplaneMode(value)
+    }
+
+    fun airplaneModeValue(): Boolean {
+        return preferences.flightModeSwitch()
+    }
+
+    fun reset() {
+        manager.reset()
+    }
+
+    fun unpair() {
+        manager.forgetDevice()
+    }
+
+    /*
+        public boolean checkWatchConnection() {
+        if (!this.mBackgroundService.isBtAvailable()) {
+            Toast.makeText(this.mContext, "Bluetooth is off on the phone.\nPlease, turn it on.", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (!this.mBackgroundService.isConnected()) {
+            Toast.makeText(this.mContext, "Cannot connect to the watch.\nPlease check its operability.", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            return true;
         }
     }
+     */
 }

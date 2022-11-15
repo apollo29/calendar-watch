@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'de.nanogiants.android-versioning'
     id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -80,4 +81,5 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
     implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
+    implementation 'me.relex:circleindicator:2.1.6'
 }

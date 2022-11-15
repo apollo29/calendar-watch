@@ -19,9 +19,9 @@
                 android:id="@+id/toolbar_icon"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:scaleType="fitCenter"
-                android:padding="18dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="18dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_close_24"
                 app:tint="@color/main_text_color" />
 
@@ -287,7 +287,7 @@
                             android:padding="6dp"
                             android:src="@drawable/ic_all_day_events" />
 
-                        <Switch
+                        <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_allday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -330,7 +330,7 @@
                             android:padding="6dp"
                             android:src="@drawable/ic_vibrate" />
 
-                        <Switch
+                        <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_vibrate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -373,7 +373,7 @@
                             android:padding="6dp"
                             android:src="@drawable/ic_flight_mode" />
 
-                        <Switch
+                        <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_airplane"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

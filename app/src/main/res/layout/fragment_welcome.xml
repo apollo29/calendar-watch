@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/welcome_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/welcome_background">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/welcome_viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/toolbar_icon"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="18dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_baseline_close_24"
+            android:layout_gravity="top"
+            app:tint="@color/main_text_color" />
+
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/indicator"
+            ci_drawable="@drawable/indicator_radius"
+            ci_drawable_unselected="@drawable/indicator_radius"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"/>
+    </FrameLayout>
+
+</layout>

@@ -40,5 +40,8 @@
     <dimen name="battery_level_view_size">330dp</dimen>
 
     <dimen name="fragment_shadow_size">4dp</dimen>
+    <dimen name="fragment_button_size">55dp</dimen>
+    <dimen name="fragment_starting_top_margin">70dp</dimen>
+    <dimen name="fragment_starting_viewpager_size">481dp</dimen>
 
 </resources>

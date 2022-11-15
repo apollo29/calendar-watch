@@ -1,17 +1,15 @@
 package com.apollo29.calendarwatch.ui.settings
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.apollo29.calendarwatch.R
+import com.apollo29.calendarwatch.databinding.DialogAlertBinding
 import com.apollo29.calendarwatch.databinding.DialogCalibrateBinding
+import com.apollo29.calendarwatch.databinding.DialogFixedModeBinding
 import com.apollo29.calendarwatch.databinding.FragmentSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.orhanobut.logger.Logger
@@ -29,11 +27,9 @@ class SettingsDialogFragment : Fragment() {
         Logger.d("onSwitchModeClickListener")
         if (it.id == binding.fixedButton.id) {
             Logger.d("show alter dialog")
-            viewModel.switchModeValue.postValue(true)
-            viewModel.preferences.switchModeSwitch(true)
+            fixedMode()
         } else if (it.id == binding.flexibleButton.id) {
-            viewModel.switchModeValue.postValue(false)
-            viewModel.preferences.switchModeSwitch(false)
+            viewModel.switchMode(false, null)
         }
     }
 
@@ -60,21 +56,58 @@ class SettingsDialogFragment : Fragment() {
         viewModel.switchModeValue.observe(viewLifecycleOwner) {
             if (it) {
                 binding.fixedCircle.setColorFilter(resources.getColor(R.color.colorAccent, null))
-                binding.fixedButton.setBackgroundColor(resources.getColor(R.color.button_normal, null))
+                binding.fixedButton.setBackgroundColor(
+                    resources.getColor(
+                        R.color.button_normal,
+                        null
+                    )
+                )
 
-                binding.flexibleCircle.setColorFilter(resources.getColor(R.color.colorPressItem,null))
-                binding.flexibleButton.setBackgroundColor(resources.getColor(R.color.dark_activity_background, null))
+                binding.flexibleCircle.setColorFilter(
+                    resources.getColor(
+                        R.color.colorPressItem,
+                        null
+                    )
+                )
+                binding.flexibleButton.setBackgroundColor(
+                    resources.getColor(
+                        R.color.dark_activity_background,
+                        null
+                    )
+                )
             } else {
                 binding.flexibleCircle.setColorFilter(resources.getColor(R.color.colorAccent, null))
-                binding.flexibleButton.setBackgroundColor(resources.getColor(R.color.button_normal, null))
+                binding.flexibleButton.setBackgroundColor(
+                    resources.getColor(
+                        R.color.button_normal,
+                        null
+                    )
+                )
 
                 binding.fixedCircle.setColorFilter(resources.getColor(R.color.colorPressItem, null))
-                binding.fixedButton.setBackgroundColor(resources.getColor(R.color.dark_activity_background, null))
+                binding.fixedButton.setBackgroundColor(
+                    resources.getColor(
+                        R.color.dark_activity_background,
+                        null
+                    )
+                )
             }
         }
 
         binding.buttonCalibrateWatch.setOnClickListener {
             calibrate()
+        }
+
+        binding.switchAirplane.setOnCheckedChangeListener { _, value ->
+            viewModel.airplaneMode(value)
+        }
+
+        binding.buttonReset.setOnClickListener {
+            viewModel.reset()
+        }
+
+        binding.buttonForget.setOnClickListener {
+            unpair()
         }
     }
 
@@ -104,6 +137,46 @@ class SettingsDialogFragment : Fragment() {
 
         calibrateBinding.pickerHour.value = now.get(11)
         calibrateBinding.pickerMinute.value = now.get(12)
+
+        dialog.show()
+    }
+
+    private fun fixedMode() {
+        val fixedModeBinding = DialogFixedModeBinding.inflate(layoutInflater)
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setView(fixedModeBinding.root)
+        val dialog = builder.create()
+
+        fixedModeBinding.buttonOk.setOnClickListener {
+            val hour = fixedModeBinding.pickerHour.value
+            viewModel.switchMode(true, hour)
+            dialog.dismiss()
+        }
+        fixedModeBinding.buttonCancel.setOnClickListener {
+            dialog.cancel()
+        }
+
+        fixedModeBinding.pickerHour.value = viewModel.fixedModeValue()
+
+        dialog.show()
+    }
+
+    private fun unpair() {
+        val alertDialogBinding = DialogAlertBinding.inflate(layoutInflater)
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setView(alertDialogBinding.root)
+        val dialog = builder.create()
+
+        alertDialogBinding.alertDialogText.text = getString(R.string.dialog_msg_forget_watch)
+        alertDialogBinding.okButton.text = getString(R.string.yes)
+        alertDialogBinding.okButton.setOnClickListener {
+            viewModel.unpair()
+            dialog.dismiss()
+        }
+        alertDialogBinding.cancelButton.text = getString(R.string.no)
+        alertDialogBinding.cancelButton.setOnClickListener {
+            dialog.cancel()
+        }
 
         dialog.show()
     }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fragment_background"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="300dp"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:id="@+id/alert_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginRight="22dp"
+            android:text="Title"
+            android:textColor="@color/main_text_color"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/alert_dialog_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginRight="22dp"
+            android:gravity="center"
+            android:text="@string/welcome_terms"
+            android:textAlignment="center"
+            android:textColor="@color/second_text_color"
+            android:textColorLink="@color/main_text_color"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="26dp" />
+
+        <LinearLayout
+            android:id="@+id/alert_dialog_buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_button"
+                style="?attr/materialButtonTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/android:cancel" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ok_button"
+                style="?attr/materialButtonTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/android:ok" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

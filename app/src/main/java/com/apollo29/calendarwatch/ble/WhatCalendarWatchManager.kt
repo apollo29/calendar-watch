@@ -1,29 +1,48 @@
 package com.apollo29.calendarwatch.ble
 
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCharacteristic
+import android.annotation.SuppressLint
+import android.bluetooth.*
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.apollo29.calendarwatch.BuildConfig
 import com.apollo29.calendarwatch.model.BatteryInfo
+import com.apollo29.calendarwatch.repository.Preferences
 import com.orhanobut.logger.Logger
+import dagger.hilt.android.qualifiers.ApplicationContext
+import no.nordicsemi.android.ble.ConnectRequest
 import no.nordicsemi.android.ble.data.Data
 import no.nordicsemi.android.ble.livedata.ObservableBleManager
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context) {
+@Singleton
+class WhatCalendarWatchManager @Inject constructor(@ApplicationContext context: Context) :
+    ObservableBleManager(context) {
 
     val batteryLevel = MutableLiveData<BatteryInfo>()
     val calibrateState = MutableLiveData<Boolean>()
+
+    var forgetDevice = true
+
+    private var device: BluetoothDevice? = null
+    private var connectRequest: ConnectRequest? = null
+
+    private val bluetoothManager = context.bluetoothAdapter()
+    private val preferences = Preferences(context)
 
     private var batteryLevelCharacteristic: BluetoothGattCharacteristic? = null
     private var calibrateCharacteristic: BluetoothGattCharacteristic? = null
     private var updateTimeCharacteristic: BluetoothGattCharacteristic? = null
     private var flexibleModeCharacteristic: BluetoothGattCharacteristic? = null
     private var airplaneModeCharacteristic: BluetoothGattCharacteristic? = null
+
+    private val allDaysPattern = CharArray(288)
+    private val currentDayPattern = CharArray(96)
+    private val tomorrowPattern = CharArray(96)
+    private val dayAfterTomorrowPattern = CharArray(96)
+    private var alerts = ArrayList<Byte>()
 
     override fun log(priority: Int, message: String) {
         if (BuildConfig.DEBUG || priority == Log.ERROR) {
@@ -49,6 +68,35 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
                 batteryLevel.value = batteryInfo
             }
         }
+
+    // CONNECT/PAIR
+
+    fun connectWatch(device: BluetoothDevice) {
+        // Prevent from calling again when called again (screen orientation changed).
+        if (this.device == null) {
+            this.device = device
+            reconnect()
+        }
+    }
+
+    /**
+     * Reconnects to previously connected device.
+     * If this device was not supported, its services were cleared on disconnection, so
+     * reconnection may help.
+     */
+    @SuppressLint("MissingPermission")
+    private fun reconnect() {
+        if (device != null) {
+            connectRequest = connect(device!!)
+                .retry(3, 100)
+                .useAutoConnect(false)
+                .then {
+                    preferences.watchId(it.name)
+                    connectRequest = null
+                }
+            connectRequest!!.enqueue()
+        }
+    }
 
     // CALIBRATE
 
@@ -111,6 +159,20 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
 
     // endregion
 
+    // Sync
+
+    fun manualSync() {
+        reset()
+        allDaysPattern[100] = 'a'
+        updateAllDayPatterns()
+    }
+
+    fun updateAllDayPatterns() {
+
+    }
+
+    // endregion
+
     // Flexible Mode
 
     fun setFlexibleMode() {
@@ -153,6 +215,38 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
     }
 
     // endregion
+
+    // Reset
+
+    fun reset() {
+        Arrays.fill(allDaysPattern, '0')
+        Arrays.fill(currentDayPattern, '0')
+        Arrays.fill(tomorrowPattern, '0')
+        Arrays.fill(dayAfterTomorrowPattern, '0')
+        alerts = ArrayList<Byte>()
+        preferences.pattern(allDaysPattern)
+        preferences.alerts(alerts)
+    }
+
+    // endregion
+
+    fun forgetDevice() {
+        preferences.watchId(null)
+        forgetDevice = true
+    }
+
+    // util
+
+    fun isBluetoothEnabled(): Boolean {
+        return bluetoothManager?.isEnabled ?: false
+    }
+
+    fun isWatchConnected(): Boolean {
+        return isBluetoothEnabled() && device != null
+    }
+
+    private fun Context.bluetoothAdapter(): BluetoothAdapter? =
+        (this.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
 
     /**
      * BluetoothGatt callbacks object.
@@ -207,5 +301,24 @@ class WhatCalendarWatchManager(context: Context) : ObservableBleManager(context)
             UUID.fromString("67E40008-5C68-D803-BF31-F83F2B6585FA")
         val UUID_CHARACTERISTIC_AIRPLANE_MODE =
             UUID.fromString("67E40010-5C68-D803-BF31-F83F2B6585FA")
+
+        val UUID_CHARACTERISTIC_PATTERN_CURRENT_DAY =
+            UUID.fromString("67E40003-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_PATTERN_TOMORROW =
+            UUID.fromString("67E40004-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW =
+            UUID.fromString("67E40005-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_CLEAR =
+            UUID.fromString("67E40006-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_ALERTS =
+            UUID.fromString("67E40007-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_ACKNOWLEDGMENT =
+            UUID.fromString("67E4000A-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_UPDATE_REQUEST =
+            UUID.fromString("67E4000C-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_TOTAL_ALERTS_COUNT =
+            UUID.fromString("67E4000E-5C68-D803-BF31-F83F2B6585FA")
+        val UUID_CHARACTERISTIC_REFRESH =
+            UUID.fromString("67E4000F-5C68-D803-BF31-F83F2B6585FA")
     }
 }

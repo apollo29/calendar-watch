@@ -50,18 +50,6 @@
                 android:visibility="invisible"
                 tools:visibility="visible" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/scan_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="scan start" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/scan_stop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="scan stop" />
-
             <TextView
                 android:id="@+id/battery_level_info"
                 android:layout_width="match_parent"
@@ -109,8 +97,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:focusable="true"
             android:clickable="true"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:paddingBottom="15dp">
 

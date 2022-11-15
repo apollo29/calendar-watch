@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dark_activity_background"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:id="@+id/info_activity_toolbar_top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_toolbar_height"
+            android:background="@color/toolbar_color"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/toolbar_icon"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="18dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@color/main_text_color" />
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:text="@string/about_app_name"
+                android:textColor="@color/main_text_color"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/info_activity_toolbar_top">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/button_info_welcome"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingHorizontal="@dimen/activity_vertical_margin"
+                android:background="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/info_welcome"
+                    android:textAllCaps="true"
+                    android:textColor="@color/info_button_text_color"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_baseline_arrow_forward_24"
+                    app:tint="@color/info_button_text_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@drawable/divider" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/info_version"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingHorizontal="@dimen/activity_vertical_margin"
+                android:background="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/app_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_version"
+                    android:textAllCaps="true"
+                    android:textColor="@color/info_button_text_color"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@drawable/divider" />
+
+            <TextView
+                android:id="@+id/info_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:text="@string/app_info"
+                android:textColor="@color/main_text_color"
+                style="?attr/textAppearanceBody1"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swiss_made_content"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/swiss_made_image"
+                android:layout_width="15dp"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/swiss_made_text"
+                android:gravity="center"
+                android:src="@drawable/ic_switzerland" />
+
+            <TextView
+                android:id="@+id/swiss_made_text"
+                style="@style/Theme.CalendarWatch.About.SwissMade"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/swiss_made_text"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

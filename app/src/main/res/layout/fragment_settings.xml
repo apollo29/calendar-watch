@@ -248,7 +248,7 @@
                             android:layout_height="24dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:src="@drawable/arrow_right"
+                            android:src="@drawable/ic_baseline_arrow_forward_24"
                             app:tint="@color/info_button_text_color" />
 
                         <TextView

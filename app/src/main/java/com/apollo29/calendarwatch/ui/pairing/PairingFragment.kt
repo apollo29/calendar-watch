@@ -52,6 +52,7 @@ class PairingFragment : Fragment() {
     }
 
     private fun startScanning() {
+        // todo add timeout
         binding.progressPairWatch.visibility = VISIBLE
         Logger.d("start scanning")
         scanner.startScan(leScanCallback)

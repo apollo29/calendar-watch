@@ -11,6 +11,7 @@ import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.databinding.FragmentMainBinding
 import com.apollo29.calendarwatch.model.BatteryInfo
 import com.apollo29.calendarwatch.model.BatteryInfo.Companion.CHARGING
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,6 +42,10 @@ class MainFragment : Fragment() {
 
         binding.buttonMyWatch.setOnClickListener {
             findNavController().navigate(R.id.nav_settings)
+        }
+
+        binding.toolbarIcon.setOnClickListener {
+            findNavController().navigate(R.id.nav_about)
         }
     }
 

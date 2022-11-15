@@ -141,4 +141,18 @@
     <string name="welcome_terms">By pairing the watch and continuous use of this application you acknowledge that you have read the Terms &amp; Conditions and Privacy Policy, understand them, and agree to be bound by them.</string>
     <string name="welcome_text">Thank you for buying our Calendar Watch!\nThe next few steps will guide you through the\nset up process for your new Calendar Watch.</string>
     <string name="yes">YES</string>
+
+    <string name="about_title">About</string>
+    <string name="about_app_name" translatable="false">What? Calendar App</string>
+    <string name="about_version" translatable="false">Version %1$s (%2$s)</string>
+    <string name="about_app_publisher" translatable="false">App Publisher Apollo29</string>
+    <string name="about_app_publisher_name" translatable="false">Apollo29</string>
+
+    <string name="app_info">This app is not related to What Watch AG. The original app is no longer available on the Android Play Store and this is a replacement based on the original app. The author of this app takes no responsibility for the use of this app with your Calendar Watch by What? or What Watch AG.</string>
+
+    <string name="dialog_terms_agreement">This app is not related to What Watch AG. The original app is no longer available on the Android Play Store and this is a replacement based on the original app. The author of this app takes no responsibility for the use of this app with your Calendar Watch by What? or What Watch AG.\nBy clicking "agree" you agree that all warranties are expressly excluded - the software or service is provided "as is".</string>
+    <string name="dialog_terms_agree">agree</string>
+    <string name="dialog_terms_disagree">disagree</string>
+
+    <string name="swiss_made_text" translatable="false">SWISS MADE</string>
 </resources>

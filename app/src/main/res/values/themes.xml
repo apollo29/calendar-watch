@@ -105,4 +105,11 @@
         <item name="android:textColor">@color/battery_level_text_color</item>
         <item name="android:textFontWeight">200</item>
     </style>
+
+    <style name="Theme.CalendarWatch.About.SwissMade" parent="@style/Theme.CalendarWatch.TextAppearance.Body2">
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginHorizontal">@dimen/base_half_gutter</item>
+    </style>
 </resources>

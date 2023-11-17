@@ -31,10 +31,10 @@
         </activity>
 
         <service
-            android:name=".ble.WhatCalendarWatchService"
+            android:name=".ble.GattService"
             android:description="@string/gatt_service_description"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <receiver
             android:name=".repository.CalendarEventsReceiver"

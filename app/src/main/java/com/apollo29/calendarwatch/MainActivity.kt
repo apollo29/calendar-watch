@@ -1,23 +1,30 @@
 package com.apollo29.calendarwatch
 
-import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.BLUETOOTH_ADVERTISE
+import android.Manifest.permission.BLUETOOTH_CONNECT
+import android.Manifest.permission.BLUETOOTH_SCAN
+import android.Manifest.permission.READ_CALENDAR
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
 import com.apollo29.calendarwatch.ble.DeviceAPI
 import com.apollo29.calendarwatch.ble.GattService
-import com.apollo29.calendarwatch.ble.WhatCalendarWatchService
 import com.apollo29.calendarwatch.databinding.ActivityMainBinding
+import com.fondesa.kpermissions.allGranted
+import com.fondesa.kpermissions.extension.permissionsBuilder
+import com.fondesa.kpermissions.extension.send
+import com.google.android.material.snackbar.Snackbar
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.AndroidEntryPoint
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -33,11 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // permissions
-        requirePermission()
-
-        // Startup our Bluetooth GATT service explicitly so it continues to run even if
-        // this activity is not in focus
-        startForegroundService(Intent(applicationContext, WhatCalendarWatchService::class.java))
+        requirePermissionsAndStartService()
 
         // Logger
         val formatStrategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
@@ -54,34 +57,45 @@ class MainActivity : AppCompatActivity() {
 
     // PERMISSIONS
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
+    private fun requirePermissionsAndStartService() {
+        val permissionRequest = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            permissionsBuilder(
+                READ_CALENDAR,
+                ACCESS_FINE_LOCATION,
+                ACCESS_COARSE_LOCATION
+            ).build()
+        } else {
+            permissionsBuilder(
+                READ_CALENDAR,
+                ACCESS_FINE_LOCATION,
+                ACCESS_COARSE_LOCATION,
+                BLUETOOTH_ADVERTISE,
+                BLUETOOTH_SCAN,
+                BLUETOOTH_CONNECT
+            ).build()
+        }
 
-    @AfterPermissionGranted(RC_APP)
-    private fun requirePermission() {
-        val perm = arrayOf(
-            Manifest.permission.READ_CALENDAR,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
-        if (!EasyPermissions.hasPermissions(this, *perm)) {
-            // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(
-                this, getString(R.string.app_permission_request),
-                RC_APP, *perm
-            )
+        permissionRequest.send { result ->
+            if (result.allGranted()) {
+                startService()
+            }
+            else {
+                Snackbar.make(
+                    binding.root,
+                    "No Permissions Granted, App can't be used",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
     // endregion
+
+    private fun startService() {
+        // Startup our Bluetooth GATT service explicitly so it continues to run even if
+        // this activity is not in focus
+        startForegroundService(Intent(this, GattService::class.java))
+    }
 
     override fun onStart() {
         super.onStart()
@@ -123,8 +137,4 @@ class MainActivity : AppCompatActivity() {
     }
 
     // endregion
-
-    companion object {
-        const val RC_APP = 101
-    }
 }

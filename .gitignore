@@ -1,7 +1,7 @@
 *.iml
+.idea
 .gradle
 /local.properties
-/.idea
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -9,14 +9,11 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/app/build
-/app/release
-/app/debug
-/app/keys
 /build
 /captures
 .externalNativeBuild
 .cxx
+local.properties
+*.env
+/app/keys
 /app/google-services.json
-/keys
-/*.env

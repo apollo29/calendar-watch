@@ -23,6 +23,8 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.experimental.or
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 @Singleton
 class WhatCalendarWatchManager @Inject constructor(
@@ -278,7 +280,7 @@ class WhatCalendarWatchManager @Inject constructor(
             var b: Byte = 0
             for (c in 0..4) {
                 val v = pattern[i + c] - '0'
-                b = (b + Math.round(Math.pow(3.0, c.toDouble()) * v)).toByte()
+                b = (b + (3.0.pow(c.toDouble()) * v).roundToInt()).toByte()
             }
             value[i / 5 + 1] = b
             i += 5
@@ -560,11 +562,11 @@ class WhatCalendarWatchManager @Inject constructor(
                     )
                     Arrays.fill(mAllDaysNewPattern, eventStartSector, eventEndSector, '1')
                     currentDayPattern =
-                        Arrays.copyOfRange(mAllDaysNewPattern, 0, 96)
+                        mAllDaysNewPattern.copyOfRange(0, 96)
                     tomorrowPattern =
-                        Arrays.copyOfRange(mAllDaysNewPattern, 96, 192)
+                        mAllDaysNewPattern.copyOfRange(96, 192)
                     dayAfterTomorrowPattern =
-                        Arrays.copyOfRange(mAllDaysNewPattern, 192, 288)
+                        mAllDaysNewPattern.copyOfRange(192, 288)
                     val alertStartSector = eventStartSector
                     val alertEndSector = eventEndSector
                     if (preferences.vibrateSwitch()) {
@@ -625,16 +627,16 @@ class WhatCalendarWatchManager @Inject constructor(
                 preferences.pattern(allDaysPattern)
                 preferences.alerts(alerts)
                 Logger.d(
-                    "current day pattern: " + Arrays.toString(currentDayPattern)
+                    "current day pattern: " + currentDayPattern.contentToString()
                 )
                 Logger.d(
-                    "tomorrow pattern: " + Arrays.toString(tomorrowPattern)
+                    "tomorrow pattern: " + tomorrowPattern.contentToString()
                 )
                 Logger.d(
-                    "day after tomorrow pattern: " + Arrays.toString(dayAfterTomorrowPattern)
+                    "day after tomorrow pattern: " + dayAfterTomorrowPattern.contentToString()
                 )
                 Logger.d(
-                    "alerts: " + alerts.toString()
+                    "alerts: $alerts"
                 )
                 updateTime()
                 updateCurrentDayPattern()
@@ -657,42 +659,40 @@ class WhatCalendarWatchManager @Inject constructor(
         abstract fun onTimeChanged()
     }
 
-    infix fun Byte.shl(that: Int): Int = this.toInt().shl(that)
+    private infix fun Byte.shl(that: Int): Int = this.toInt().shl(that)
 
     companion object {
         // DEFAULT SERVICE
-        val UUID_SERVICE =
+        val UUID_SERVICE: UUID =
             UUID.fromString("67E40001-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_BATTERY_LEVEL =
+        val UUID_CHARACTERISTIC_BATTERY_LEVEL: UUID =
             UUID.fromString("67E4000D-5C68-D803-BF31-F83F2B6585FA")
 
-        val UUID_CHARACTERISTIC_CALIBRATE =
+        val UUID_CHARACTERISTIC_CALIBRATE: UUID =
             UUID.fromString("67E40009-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_UPDATE_TIME =
+        val UUID_CHARACTERISTIC_UPDATE_TIME: UUID =
             UUID.fromString("67E40002-5C68-D803-BF31-F83F2B6585FA")
 
-        val UUID_CHARACTERISTIC_SWITCH_MODE =
+        val UUID_CHARACTERISTIC_SWITCH_MODE: UUID =
             UUID.fromString("67E40008-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_AIRPLANE_MODE =
+        val UUID_CHARACTERISTIC_AIRPLANE_MODE: UUID =
             UUID.fromString("67E40010-5C68-D803-BF31-F83F2B6585FA")
 
-        val UUID_CHARACTERISTIC_PATTERN_CURRENT_DAY =
+        val UUID_CHARACTERISTIC_PATTERN_CURRENT_DAY: UUID =
             UUID.fromString("67E40003-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_PATTERN_TOMORROW =
+        val UUID_CHARACTERISTIC_PATTERN_TOMORROW: UUID =
             UUID.fromString("67E40004-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW =
+        val UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW: UUID =
             UUID.fromString("67E40005-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_CLEAR =
+        val UUID_CHARACTERISTIC_CLEAR: UUID =
             UUID.fromString("67E40006-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_ALERTS =
+        val UUID_CHARACTERISTIC_ALERTS: UUID =
             UUID.fromString("67E40007-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_ACKNOWLEDGMENT =
+        val UUID_CHARACTERISTIC_ACKNOWLEDGMENT: UUID =
             UUID.fromString("67E4000A-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_UPDATE_REQUEST =
+        val UUID_CHARACTERISTIC_UPDATE_REQUEST: UUID =
             UUID.fromString("67E4000C-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_TOTAL_ALERTS_COUNT =
-            UUID.fromString("67E4000E-5C68-D803-BF31-F83F2B6585FA")
-        val UUID_CHARACTERISTIC_REFRESH =
+        val UUID_CHARACTERISTIC_REFRESH: UUID =
             UUID.fromString("67E4000F-5C68-D803-BF31-F83F2B6585FA")
     }
 }

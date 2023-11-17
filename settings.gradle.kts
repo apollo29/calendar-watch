@@ -1,8 +1,10 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        mavenLocal()
+        gradlePluginPortal()
+        maven { setUrl("https://jitpack.io") }
     }
 }
 dependencyResolutionManagement {
@@ -10,7 +12,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
+        maven { setUrl("https://jitpack.io") }
     }
 }
+
 rootProject.name = "Calendar Watch"
-include ':app'
+include(":app")
+ 

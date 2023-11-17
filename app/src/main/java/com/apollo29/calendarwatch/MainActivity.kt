@@ -9,6 +9,7 @@ import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
 import com.apollo29.calendarwatch.ble.DeviceAPI
 import com.apollo29.calendarwatch.ble.GattService
+import com.apollo29.calendarwatch.ble.WhatCalendarWatchService
 import com.apollo29.calendarwatch.databinding.ActivityMainBinding
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         // Startup our Bluetooth GATT service explicitly so it continues to run even if
         // this activity is not in focus
-        //startForegroundService(Intent(this, GattService::class.java))
+        startForegroundService(Intent(applicationContext, WhatCalendarWatchService::class.java))
 
         // Logger
         val formatStrategy: FormatStrategy = PrettyFormatStrategy.newBuilder()

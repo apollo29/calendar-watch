@@ -77,7 +77,6 @@ dependencies {
     // other
     implementation("com.orhanobut:logger:2.2.0")
     implementation("com.github.fondesa:kpermissions:3.4.0")
-    // todo check
     implementation("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("me.relex:circleindicator:2.1.6")
 }

@@ -1,5 +1,6 @@
 package com.whatcalendar.firmware;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -11,7 +12,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +19,19 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import butterknife.ButterKnife;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.whatcalendar.R;
 import com.whatcalendar.activity.InfoActivity;
 import com.whatcalendar.activity.WelcomeScreenActivity;
 import com.whatcalendar.service.BackgroundService;
 import com.whatcalendar.util.GlobalPreferences;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Field;
 import java.util.Calendar;
-import org.apache.commons.lang3.StringUtils;
 
 /* loaded from: classes.dex */
 public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
@@ -58,7 +62,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                 alert_dialog.requestWindowFeature(1);
                 alert_dialog.setContentView(R.layout.alert_dialog);
                 ((TextView) alert_dialog.findViewById(R.id.alert_dialog_text)).setText(getString(R.string.dialog_msg_update_can_be));
-                ((TextView) alert_dialog.findViewById(R.id.ok_button_text)).setText(getString(R.string.f0no));
+                ((TextView) alert_dialog.findViewById(R.id.ok_button_text)).setText(getString(R.string.ok));
                 alert_dialog.findViewById(R.id.ok_button).setOnClickListener(new View.OnClickListener() { // from class: com.whatcalendar.firmware.UpdateBroadcastReceiver.1
                     @Override // android.view.View.OnClickListener
                     public void onClick(View v) {
@@ -66,7 +70,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                         alert_dialog.dismiss();
                     }
                 });
-                alert_dialog.findViewById(R.id.cancel_button).setVisibility(0);
+                alert_dialog.findViewById(R.id.cancel_button).setVisibility(View.VISIBLE);
                 ((TextView) alert_dialog.findViewById(R.id.cancel_button_text)).setText(getString(R.string.yes));
                 alert_dialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() { // from class: com.whatcalendar.firmware.UpdateBroadcastReceiver.2
                     @Override // android.view.View.OnClickListener
@@ -95,7 +99,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                             alert_dialog2.dismiss();
                         }
                     });
-                    alert_dialog2.findViewById(R.id.cancel_button).setVisibility(8);
+                    alert_dialog2.findViewById(R.id.cancel_button).setVisibility(View.GONE);
                     alert_dialog2.setCancelable(false);
                     alert_dialog2.show();
                 }
@@ -105,16 +109,16 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                 alert_dialog3.setContentView(R.layout.alert_dialog);
                 alert_dialog3.setCancelable(false);
                 this.progressText = (TextView) alert_dialog3.findViewById(R.id.alert_dialog_text);
-                ((TextView) alert_dialog3.findViewById(R.id.alert_dialog_text)).setText(getString(R.string.dialog_msg_update_progress) + StringUtils.LF + "0 %");
-                alert_dialog3.findViewById(R.id.alert_dialog_buttons_layout).setVisibility(8);
-                alert_dialog3.findViewById(R.id.ok_button).setVisibility(8);
-                alert_dialog3.findViewById(R.id.cancel_button).setVisibility(8);
+                ((TextView) alert_dialog3.findViewById(R.id.alert_dialog_text)).setText(getString(R.string.dialog_msg_update_progress) + "0 %");
+                alert_dialog3.findViewById(R.id.alert_dialog_buttons_layout).setVisibility(View.GONE);
+                alert_dialog3.findViewById(R.id.ok_button).setVisibility(View.GONE);
+                alert_dialog3.findViewById(R.id.cancel_button).setVisibility(View.GONE);
                 alert_dialog3.show();
                 this.progressDialog = alert_dialog3;
             } else if (intent.getAction().equals(BackgroundService.ACTION_FIRMWARE_UPDATE_PROGRESS)) {
                 if (this.progressText != null) {
                     int progress = intent.getIntExtra("progress", 0);
-                    this.progressText.setText(getString(R.string.dialog_msg_update_progress) + StringUtils.LF + progress + " %");
+                    this.progressText.setText(getString(R.string.dialog_msg_update_progress) + progress + " %");
                 }
             } else if (intent.getAction().equals(BackgroundService.ACTION_FIRMWARE_UPDATE_DONE)) {
                 if (this.progressDialog != null) {
@@ -134,7 +138,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                         alert_dialog4.dismiss();
                     }
                 });
-                alert_dialog4.findViewById(R.id.cancel_button).setVisibility(8);
+                alert_dialog4.findViewById(R.id.cancel_button).setVisibility(View.GONE);
                 alert_dialog4.setCancelable(false);
                 alert_dialog4.show();
             } else if (intent.getAction().equals(BackgroundService.ACTION_BATTERY_INFO) && this.done) {
@@ -160,7 +164,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                         alert_dialog5.dismiss();
                     }
                 });
-                alert_dialog5.findViewById(R.id.cancel_button).setVisibility(8);
+                alert_dialog5.findViewById(R.id.cancel_button).setVisibility(View.GONE);
                 alert_dialog5.setCancelable(false);
                 alert_dialog5.show();
             }
@@ -182,13 +186,13 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                 alert_dialog.dismiss();
             }
         });
-        alert_dialog.findViewById(R.id.cancel_button).setVisibility(8);
+        alert_dialog.findViewById(R.id.cancel_button).setVisibility(View.GONE);
         alert_dialog.show();
         return false;
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) this.mContext.getSystemService("connectivity");
+        ConnectivityManager cm = (ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         boolean result = netInfo != null && netInfo.isConnectedOrConnecting();
         if (!result) {
@@ -212,20 +216,20 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
             this.mBackgroundService.calibrateStart();
             View view = ((Activity) this.mContext).getLayoutInflater().inflate(R.layout.view_calibrate, (ViewGroup) null);
             Calendar now = Calendar.getInstance();
-            final NumberPicker pickerHour = (NumberPicker) ButterKnife.findById(view, (int) R.id.picker_hour);
+            final NumberPicker pickerHour = view.findViewById(R.id.picker_hour);
             setNumberPickerTextColor(pickerHour, ((Activity) this.mContext).getResources().getColor(R.color.main_text_color));
             setDividerColor(pickerHour, Color.parseColor("#00000000"));
             pickerHour.setMinValue(0);
             pickerHour.setMaxValue(11);
             pickerHour.setValue(0);
             pickerHour.setValue(now.get(11));
-            final NumberPicker pickerMinute = (NumberPicker) ButterKnife.findById(view, (int) R.id.picker_minute);
+            final NumberPicker pickerMinute = view.findViewById(R.id.picker_minute);
             setNumberPickerTextColor(pickerMinute, ((Activity) this.mContext).getResources().getColor(R.color.main_text_color));
             setDividerColor(pickerMinute, Color.parseColor("#00000000"));
             pickerMinute.setMinValue(0);
             pickerMinute.setMaxValue(59);
             pickerMinute.setValue(now.get(12));
-            final NumberPicker pickerSecond = (NumberPicker) ButterKnife.findById(view, (int) R.id.picker_second);
+            final NumberPicker pickerSecond = view.findViewById(R.id.picker_second);
             setNumberPickerTextColor(pickerSecond, ((Activity) this.mContext).getResources().getColor(R.color.main_text_color));
             setDividerColor(pickerSecond, Color.parseColor("#00000000"));
             pickerSecond.setMinValue(0);
@@ -233,8 +237,8 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
             final Dialog alert_dialog = new Dialog(this.mContext);
             alert_dialog.requestWindowFeature(1);
             alert_dialog.setContentView(R.layout.alert_dialog);
-            alert_dialog.findViewById(R.id.alert_dialog_title).setVisibility(8);
-            ((TextView) alert_dialog.findViewById(R.id.alert_dialog_text)).setVisibility(8);
+            alert_dialog.findViewById(R.id.alert_dialog_title).setVisibility(View.GONE);
+            ((TextView) alert_dialog.findViewById(R.id.alert_dialog_text)).setVisibility(View.GONE);
             ((LinearLayout) alert_dialog.findViewById(R.id.content)).addView(view);
             alert_dialog.findViewById(R.id.ok_button).setOnClickListener(new View.OnClickListener() { // from class: com.whatcalendar.firmware.UpdateBroadcastReceiver.8
                 @Override // android.view.View.OnClickListener
@@ -244,7 +248,7 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
                     alert_dialog.dismiss();
                 }
             });
-            alert_dialog.findViewById(R.id.cancel_button).setVisibility(0);
+            alert_dialog.findViewById(R.id.cancel_button).setVisibility(View.VISIBLE);
             alert_dialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() { // from class: com.whatcalendar.firmware.UpdateBroadcastReceiver.9
                 @Override // android.view.View.OnClickListener
                 public void onClick(View v) {
@@ -262,18 +266,14 @@ public abstract class UpdateBroadcastReceiver extends BroadcastReceiver {
             View child = numberPicker.getChildAt(i);
             if (child instanceof EditText) {
                 try {
-                    Field selectorWheelPaintField = numberPicker.getClass().getDeclaredField("mSelectorWheelPaint");
+                    @SuppressLint("SoonBlockedPrivateApi") Field selectorWheelPaintField = numberPicker.getClass().getDeclaredField("mSelectorWheelPaint");
                     selectorWheelPaintField.setAccessible(true);
                     ((Paint) selectorWheelPaintField.get(numberPicker)).setColor(color);
                     ((EditText) child).setTextColor(color);
                     numberPicker.invalidate();
                     return true;
-                } catch (IllegalAccessException e) {
-                    Log.w("setNumberPickerTextColor", e);
-                } catch (IllegalArgumentException e2) {
-                    Log.w("setNumberPickerTextColor", e2);
-                } catch (NoSuchFieldException e3) {
-                    Log.w("setNumberPickerTextColor", e3);
+                } catch (IllegalAccessException | NoSuchFieldException | IllegalArgumentException e) {
+                    Log.w("cw", e);
                 }
             }
         }

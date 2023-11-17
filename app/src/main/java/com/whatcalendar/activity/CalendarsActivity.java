@@ -2,6 +2,7 @@ package com.whatcalendar.activity;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -9,10 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.CalendarContract;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +17,18 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityCalendarsBinding;
 import com.whatcalendar.events.DTOCalendar;
 import com.whatcalendar.service.BackgroundService;
 import com.whatcalendar.util.GlobalPreferences;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,8 +37,7 @@ import java.util.Comparator;
 public class CalendarsActivity extends AppCompatActivity {
     private static final String TAG = CalendarsActivity.class.getSimpleName();
     private BackgroundService mBackgroundService;
-    @Bind({R.id.recycler_view})
-    RecyclerView recyclerView;
+    private ActivityCalendarsBinding binding;
     ArrayList<DTOCalendar> calendars = new ArrayList<>();
     private ServiceConnection mServiceConnection = new ServiceConnection() { // from class: com.whatcalendar.activity.CalendarsActivity.1
         @Override // android.content.ServiceConnection
@@ -50,18 +51,21 @@ public class CalendarsActivity extends AppCompatActivity {
         }
     };
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendars);
-        ButterKnife.bind(this);
-        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, 1);
-        this.recyclerView.setAdapter(new CalendarsAdapter());
-        this.recyclerView.setLayoutManager(new LinearLayoutManager(this, 1, false));
+        binding = ActivityCalendarsBinding.inflate(getLayoutInflater());
+        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, Context.BIND_AUTO_CREATE);
+        binding.recyclerView.setAdapter(new CalendarsAdapter());
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        binding.toolbarIcon.setOnClickListener(view -> onCloseButtonClicked());
         loadCalendars();
     }
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
     public void onDestroy() {
         super.onDestroy();
         if (this.mBackgroundService != null) {
@@ -93,10 +97,9 @@ public class CalendarsActivity extends AppCompatActivity {
                 return lhs.account.compareTo(rhs.account);
             }
         });
-        this.recyclerView.getAdapter().notifyDataSetChanged();
+        binding.recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-    @OnClick({R.id.toolbar_icon})
     public void onCloseButtonClicked() {
         onBackPressed();
     }
@@ -112,7 +115,6 @@ public class CalendarsActivity extends AppCompatActivity {
         /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
         public ViewHolder(View itemView) {
             super(itemView);
-            CalendarsActivity.this = r2;
             this.calTitle = (TextView) itemView.findViewById(R.id.calendar_title);
             this.calSwitch = (Switch) itemView.findViewById(R.id.calendar_switch);
             this.calAccLayout = (RelativeLayout) itemView.findViewById(R.id.account_background);
@@ -123,9 +125,6 @@ public class CalendarsActivity extends AppCompatActivity {
 
     /* loaded from: classes.dex */
     public class CalendarsAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private CalendarsAdapter() {
-            CalendarsActivity.this = r1;
-        }
 
         @Override // android.support.v7.widget.RecyclerView.Adapter
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -137,12 +136,12 @@ public class CalendarsActivity extends AppCompatActivity {
             final DTOCalendar calendar = CalendarsActivity.this.calendars.get(position);
             holder.calTitle.setText(calendar.title);
             if (position == 0 || !calendar.account.equals(CalendarsActivity.this.calendars.get(position - 1).account)) {
-                holder.calAccLayout.setVisibility(0);
+                holder.calAccLayout.setVisibility(View.VISIBLE);
                 holder.calAccName.setText(calendar.account);
-                holder.divider.setVisibility(8);
+                holder.divider.setVisibility(View.GONE);
             } else {
-                holder.calAccLayout.setVisibility(8);
-                holder.divider.setVisibility(0);
+                holder.calAccLayout.setVisibility(View.GONE);
+                holder.divider.setVisibility(View.VISIBLE);
             }
             boolean ckecked = GlobalPreferences.getCalendarEnabled(calendar.id);
             Log.d(CalendarsActivity.TAG, "get " + calendar.id + " " + ckecked);

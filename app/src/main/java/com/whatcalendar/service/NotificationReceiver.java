@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import com.whatcalendar.R;
 import java.text.SimpleDateFormat;
@@ -33,6 +33,6 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context).setContentTitle("Calendar Watch send time").setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(current_time2)).setSmallIcon(R.mipmap.ic_launcher).setColor(ContextCompat.getColor(context, R.color.main_text_color)).setPriority(0).setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher)).setContentText(current_time2);
         int id = (int) (time % DateUtils.MILLIS_PER_HOUR);
-        ((NotificationManager) context.getSystemService("notification")).notify(id, builder.build());
+        ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(id, builder.build());
     }
 }

@@ -1,19 +1,23 @@
 package com.whatcalendar.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.whatcalendar.R;
+
 import java.lang.reflect.Field;
 import java.util.Calendar;
 
@@ -59,18 +63,14 @@ public class FragmentCalibration extends Fragment {
             View child = numberPicker.getChildAt(i);
             if (child instanceof EditText) {
                 try {
-                    Field selectorWheelPaintField = numberPicker.getClass().getDeclaredField("mSelectorWheelPaint");
+                    @SuppressLint("SoonBlockedPrivateApi") Field selectorWheelPaintField = numberPicker.getClass().getDeclaredField("mSelectorWheelPaint");
                     selectorWheelPaintField.setAccessible(true);
                     ((Paint) selectorWheelPaintField.get(numberPicker)).setColor(color);
                     ((EditText) child).setTextColor(color);
                     numberPicker.invalidate();
                     return true;
-                } catch (IllegalAccessException e) {
-                    Log.w("setNumberPickerTextColor", e);
-                } catch (IllegalArgumentException e2) {
-                    Log.w("setNumberPickerTextColor", e2);
-                } catch (NoSuchFieldException e3) {
-                    Log.w("setNumberPickerTextColor", e3);
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
+                    Log.w("cw", e);
                 }
             }
         }
@@ -86,14 +86,8 @@ public class FragmentCalibration extends Fragment {
                     ColorDrawable colorDrawable = new ColorDrawable(color);
                     pf.set(picker, colorDrawable);
                     return;
-                } catch (Resources.NotFoundException e) {
+                } catch (Resources.NotFoundException | IllegalAccessException | IllegalArgumentException e) {
                     e.printStackTrace();
-                    return;
-                } catch (IllegalAccessException e2) {
-                    e2.printStackTrace();
-                    return;
-                } catch (IllegalArgumentException e3) {
-                    e3.printStackTrace();
                     return;
                 }
             }

@@ -10,33 +10,33 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityMainBinding;
 import com.whatcalendar.entity.BatteryInfo;
 import com.whatcalendar.firmware.UpdateBroadcastReceiver;
 import com.whatcalendar.service.BackgroundService;
 import com.whatcalendar.util.GlobalPreferences;
 import com.whatcalendar.view.BatteryLevelView;
+
 import org.apache.commons.lang3.StringUtils;
 
 /* loaded from: classes.dex */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private ActivityMainBinding binding;
     private BackgroundService mBackgroundService;
-    @Bind({R.id.view_battery_level})
+
     BatteryLevelView mBatteryLevelView;
-    @Bind({R.id.layout_charging})
     RelativeLayout mChargingLayout;
     private Context mContext;
-    @Bind({R.id.button_my_watch})
     View mMyWatchButton;
     private boolean firstLaunch = true;
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() { // from class: com.whatcalendar.activity.MainActivity.1
@@ -80,16 +80,25 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+
+        mBatteryLevelView = binding.viewBatteryLevel;
+        mChargingLayout = binding.layoutCharging;
+        mMyWatchButton = binding.buttonMyWatch;
+
+        binding.buttonMyWatch.setOnClickListener(view -> myWatchClicked());
+        binding.buttonInfo.setOnClickListener(view -> onInfoClicked());
+
         this.mContext = this;
         updateBatteryView(GlobalPreferences.getFlightModeSwitch());
         if (isWatchLinked()) {
             startService(new Intent(this, BackgroundService.class));
-            bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, 1);
+            bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, Context.BIND_AUTO_CREATE);
         }
         IntentFilter intentFilter = new IntentFilter(BackgroundService.ACTION_BATTERY_INFO);
         intentFilter.addAction(BackgroundService.ACTION_CONNECTION_STATE_CHANGE);
@@ -109,10 +118,6 @@ public class MainActivity extends AppCompatActivity {
         int upY;
 
         public abstract void upSwipeAction();
-
-        UpSwipeListener() {
-            MainActivity.this = this$0;
-        }
 
         @Override // android.view.View.OnTouchListener
         public boolean onTouch(View v, MotionEvent event) {
@@ -142,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
     public void onDestroy() {
         super.onDestroy();
         unbindService(this.mServiceConnection);
@@ -153,12 +159,10 @@ public class MainActivity extends AppCompatActivity {
         return StringUtils.isNotEmpty(GlobalPreferences.getConnectedWatchId());
     }
 
-    @OnClick({R.id.button_my_watch})
     public void myWatchClicked() {
         startActivity(new Intent(this, WatchSettingsActivity.class));
     }
 
-    @OnClick({R.id.button_info})
     public void onInfoClicked() {
         startActivity(new Intent(this, InfoActivity.class));
     }
@@ -168,16 +172,16 @@ public class MainActivity extends AppCompatActivity {
         if (!connected) {
             this.mBatteryLevelView.setViewType(1);
             this.mBatteryLevelView.setBatteryLevel(0, false);
-            this.mChargingLayout.setVisibility(8);
+            this.mChargingLayout.setVisibility(View.GONE);
             return;
         }
         BatteryInfo bi = GlobalPreferences.getBatteryInfo();
         if (bi.getChargingStatus() == 1) {
             this.mBatteryLevelView.setViewType(2);
-            this.mChargingLayout.setVisibility(0);
+            this.mChargingLayout.setVisibility(View.VISIBLE);
         } else {
             this.mBatteryLevelView.setViewType(0);
-            this.mChargingLayout.setVisibility(8);
+            this.mChargingLayout.setVisibility(View.GONE);
         }
         BatteryLevelView batteryLevelView = this.mBatteryLevelView;
         int level = bi.getLevel();
@@ -207,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) this.mContext.getSystemService("connectivity");
+        ConnectivityManager cm = (ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }

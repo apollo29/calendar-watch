@@ -11,16 +11,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityInfoBinding;
 import com.whatcalendar.firmware.UpdateBroadcastReceiver;
 import com.whatcalendar.service.BackgroundService;
 
@@ -28,6 +27,7 @@ import com.whatcalendar.service.BackgroundService;
 public class InfoActivity extends AppCompatActivity {
     private BackgroundService mBackgroundService;
     private Context mContext;
+    private ActivityInfoBinding binding;
     private ServiceConnection mServiceConnection = new ServiceConnection() { // from class: com.whatcalendar.activity.InfoActivity.1
         @Override // android.content.ServiceConnection
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -39,30 +39,39 @@ public class InfoActivity extends AppCompatActivity {
             InfoActivity.this.mBackgroundService = null;
         }
     };
-    @Bind({R.id.button_update})
-    RelativeLayout mUpdateButton;
+    //@BindView(R.id.button_update)
+    //RelativeLayout mUpdateButton;
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityInfoBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_info);
-        ButterKnife.bind(this);
         this.mContext = this;
+        binding.buttonUpdate.setOnClickListener(view -> onCheckUpdate());
+        binding.buttonInfoPrivacy.setOnClickListener(view -> onPrivacyClicked());
+        binding.buttonInfoWhatWatchCom.setOnClickListener(view -> onWhatWatchComClicked());
+        binding.buttonInfoTerm.setOnClickListener(view -> onTermClicked());
+        binding.buttonInfoHelp.setOnClickListener(view -> onHelpClicked());
+        binding.buttonInfoFaq.setOnClickListener(view -> onFaqClicked());
+        binding.buttonInfoWelcome.setOnClickListener(view -> onWelcomeClicked());
+        binding.toolbarIcon.setOnClickListener(view -> onCloseButtonClicked());
+
         try {
             String appVersion = getPackageManager().getPackageInfo(getPackageName(), 1).versionName;
-            ((TextView) ButterKnife.findById(this, (int) R.id.text_app_version)).setText(appVersion);
-        } catch (PackageManager.NameNotFoundException e) {
+            binding.textAppVersion.setText(appVersion);
+        } catch (PackageManager.NameNotFoundException ignored) {
         }
-        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, 1);
+        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
+    @Override
     public void onDestroy() {
         super.onDestroy();
         unbindService(this.mServiceConnection);
     }
 
-    @OnClick({R.id.button_update})
     public void onCheckUpdate() {
         if (checkWatchConnection() && isOnline()) {
             IntentFilter intentFilter = new IntentFilter(BackgroundService.ACTION_FIRMWARE_UPDATE_NEED);
@@ -75,20 +84,20 @@ public class InfoActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this.mContext).registerReceiver(new UpdateBroadcastReceiver(this, this.mBackgroundService) { // from class: com.whatcalendar.activity.InfoActivity.2
                 @Override // com.whatcalendar.firmware.UpdateBroadcastReceiver
                 public void callback(String action) {
-                    InfoActivity.this.mUpdateButton.setClickable(true);
+                    InfoActivity.this.binding.buttonUpdate.setClickable(true);
                 }
             }, intentFilter);
-            this.mUpdateButton.setClickable(false);
+            this.binding.buttonUpdate.setClickable(false);
             this.mBackgroundService.checkForUpdate();
         }
     }
 
     private boolean checkWatchConnection() {
         if (!this.mBackgroundService.isBtAvailable()) {
-            Toast.makeText(this.mContext, "Bluetooth is off on the phone.\nPlease, turn it on.", 0).show();
+            Toast.makeText(this.mContext, "Bluetooth is off on the phone.\nPlease, turn it on.", Toast.LENGTH_SHORT).show();
             return false;
         } else if (!this.mBackgroundService.isConnected()) {
-            Toast.makeText(this.mContext, "Cannot connect to the watch.\nPlease check its operability.", 0).show();
+            Toast.makeText(this.mContext, "Cannot connect to the watch.\nPlease check its operability.", Toast.LENGTH_SHORT).show();
             return false;
         } else {
             return true;
@@ -96,7 +105,7 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService("connectivity");
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         boolean result = netInfo != null && netInfo.isConnectedOrConnecting();
         if (!result) {
@@ -115,39 +124,32 @@ public class InfoActivity extends AppCompatActivity {
         return result;
     }
 
-    @OnClick({R.id.button_info_privacy})
     public void onPrivacyClicked() {
         openWebView(getString(R.string.info_privacy_url), getString(R.string.info_privacy));
     }
 
-    @OnClick({R.id.button_info_what_watch_com})
     public void onWhatWatchComClicked() {
         openWebView(getString(R.string.info_what_watch_com_url), getString(R.string.info_what_watch_com));
     }
 
-    @OnClick({R.id.button_info_term})
     public void onTermClicked() {
         openWebView(getString(R.string.info_terms_url), getString(R.string.info_terms));
     }
 
-    @OnClick({R.id.button_info_help})
     public void onHelpClicked() {
         openWebView(getString(R.string.info_help_url), getString(R.string.info_help));
     }
 
-    @OnClick({R.id.button_info_faq})
     public void onFaqClicked() {
         openWebView(getString(R.string.info_faq_url), "FAQ");
     }
 
-    @OnClick({R.id.button_info_welcome})
     public void onWelcomeClicked() {
         Intent intent = new Intent(this, WelcomeScreenActivity.class);
         intent.putExtra(WelcomeScreenActivity.ONLY_GUIDE, true);
         startActivity(intent);
     }
 
-    @OnClick({R.id.toolbar_icon})
     public void onCloseButtonClicked() {
         onBackPressed();
     }

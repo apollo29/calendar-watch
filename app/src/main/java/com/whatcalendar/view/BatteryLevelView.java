@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
-import android.support.v4.internal.view.SupportMenu;
+import androidx.core.internal.view.SupportMenu;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;

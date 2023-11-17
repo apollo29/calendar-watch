@@ -1,5 +1,6 @@
 package com.whatcalendar.service;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,10 +13,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.InputDeviceCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.view.InputDeviceCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.whatcalendar.R;
 import com.whatcalendar.entity.BatteryInfo;
 import com.whatcalendar.events.CalendarEventsReceiver;
@@ -29,6 +32,10 @@ import com.whatcalendar.firmware.GWatchResponse;
 import com.whatcalendar.firmware.UpdateScheme;
 import com.whatcalendar.util.FileWritter;
 import com.whatcalendar.util.GlobalPreferences;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
@@ -42,21 +49,20 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import no.nordicsemi.android.dfu.internal.scanner.BootloaderScanner;
 import okhttp3.ResponseBody;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/* loaded from: classes.dex */
+@SuppressLint("MissingPermission")
 public class BackgroundService extends Service {
     public static final String ACTION_BATTERY_INFO = "action.battery_level";
     public static final String ACTION_CONNECTION_STATE_CHANGE = "action.ConnectionStateChange";
@@ -122,12 +128,14 @@ public class BackgroundService extends Service {
         }
     };
     private final DfuProgressListener mDfuProgressListener = new DfuProgressListenerAdapter() { // from class: com.whatcalendar.service.BackgroundService.2
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onDeviceConnecting(String deviceAddress) {
             Log.d(BackgroundService.TAG, "DFU onDeviceConnecting");
         }
 
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onDfuProcessStarting(String deviceAddress) {
             Log.d(BackgroundService.TAG, "DFU onDfuProcessStarting");
             BackgroundService.this.mBTCharacteristicWriterQueue.clearQueue();
@@ -135,7 +143,8 @@ public class BackgroundService extends Service {
             BackgroundService.this.mAllDaysPattern[100] = 'a';
         }
 
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onDfuProcessStarted(String deviceAddress) {
             super.onDfuProcessStarted(deviceAddress);
             Log.d(BackgroundService.TAG, "DFU onDfuProcessStarted");
@@ -144,21 +153,24 @@ public class BackgroundService extends Service {
             BackgroundService.this.mAllDaysPattern[100] = 'a';
         }
 
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onProgressChanged(String deviceAddress, int percent, float speed, float avgSpeed, int currentPart, int partsTotal) {
             super.onProgressChanged(deviceAddress, percent, speed, avgSpeed, currentPart, partsTotal);
             Log.d(BackgroundService.TAG, "onProgressChanged : " + deviceAddress + " " + percent + "% speed: " + speed + " avgSpeed: " + avgSpeed + " part: " + currentPart + "/" + partsTotal);
             LocalBroadcastManager.getInstance(BackgroundService.this).sendBroadcast(new Intent(BackgroundService.ACTION_FIRMWARE_UPDATE_PROGRESS).putExtra("progress", percent));
         }
 
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onDfuCompleted(String deviceAddress) {
             super.onDfuCompleted(deviceAddress);
             Log.d(BackgroundService.TAG, "DFU onDfuCompleted");
             BackgroundService.this.updateDone();
         }
 
-        @Override // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
+        @Override
+        // no.nordicsemi.android.dfu.DfuProgressListenerAdapter, no.nordicsemi.android.dfu.DfuProgressListener
         public void onError(String deviceAddress, int error, int errorType, String message) {
             super.onError(deviceAddress, error, errorType, message);
             Log.d(BackgroundService.TAG, "DFU error : " + message);
@@ -173,23 +185,21 @@ public class BackgroundService extends Service {
 
             @Override // java.util.TimerTask, java.lang.Runnable
             public void run() {
-                BackgroundService.access$3500(BackgroundService.this, BackgroundService.access$3100());
+                //BackgroundService.access$3500(BackgroundService.this, BackgroundService.access$3100());
             }
         }
 
         /* renamed from: com.whatcalendar.service.BackgroundService$2$2  reason: invalid class name and collision with other inner class name */
         /* loaded from: classes.dex */
         class C00022 extends TimerTask {
-            C00022() {
-            }
 
             @Override // java.util.TimerTask, java.lang.Runnable
             public void run() {
                 if (GlobalPreferences.getPairingMode()) {
                     GlobalPreferences.setPairingMode(false);
-                    BackgroundService.access$1900(BackgroundService.this, 0);
-                    BackgroundService.access$3600(BackgroundService.this);
-                    BackgroundService.this.updateDone()[100] = 'a';
+                    //BackgroundService.access$1900(BackgroundService.this, 0);
+                    //BackgroundService.access$3600(BackgroundService.this);
+                    //BackgroundService.this.updateDone()[100] = 'a';
                     GlobalPreferences.setFlightModeSwitch(false);
                     GlobalPreferences.setVibrateSwitch(true);
                     GlobalPreferences.setAllDayEventsInfo(true);
@@ -212,13 +222,14 @@ public class BackgroundService extends Service {
             }
         }
     };
-    private BluetoothAdapter.LeScanCallback mScanCallback = BackgroundService$$Lambda$1.lambdaFactory$(this);
+    private BluetoothAdapter.LeScanCallback mScanCallback = BackgroundServiceCallback.lambdaFactory$(this);
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() { // from class: com.whatcalendar.service.BackgroundService.5
         @Override // android.bluetooth.BluetoothGattCallback
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorRead(gatt, descriptor, status);
         }
 
+        @SuppressLint("MissingPermission")
         @Override // android.bluetooth.BluetoothGattCallback
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.d(BackgroundService.TAG, "connection state change, status: " + status + ", new state: " + newState);
@@ -229,7 +240,6 @@ public class BackgroundService extends Service {
                 LocalBroadcastManager.getInstance(BackgroundService.this).sendBroadcast(new Intent(BackgroundService.ACTION_CONNECTION_STATE_CHANGE).putExtra("state", newState));
             }
             if (newState == 2) {
-                BackgroundService.this.mGatt = gatt;
                 BackgroundService.this.mGatt.discoverServices();
                 BackgroundService.this.forgetDevice = false;
             } else if (newState != 1 && newState == 0) {
@@ -535,7 +545,7 @@ public class BackgroundService extends Service {
         this.mCurrentDayPattern = Arrays.copyOfRange(this.mAllDaysPattern, 0, 96);
         this.mTomorrowPattern = Arrays.copyOfRange(this.mAllDaysPattern, 96, 192);
         this.mDayAfterTomorrowPattern = Arrays.copyOfRange(this.mAllDaysPattern, 192, 288);
-        this.mAdapter = ((BluetoothManager) getSystemService("bluetooth")).getAdapter();
+        this.mAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         CalendarEventsReceiver.setEventsChangedCallback(this.eventsChangedCallback);
         TimeSettingsReceiver.setEventsChangedCallback(this.eventsChangedCallback);
         if (GlobalPreferences.getConnectedWatchId() != null && !GlobalPreferences.getConnectedWatchId().isEmpty()) {
@@ -739,7 +749,7 @@ public class BackgroundService extends Service {
         if (this.mGatt != null) {
             clearPatterns();
             clear(0);
-            Toast.makeText(getApplicationContext(), getString(R.string.toast_msg_reset_watch), 0).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.toast_msg_reset_watch), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -915,7 +925,7 @@ public class BackgroundService extends Service {
             if (response.errorCode != 1) {
                 Log.d(BackgroundService.TAG, "Can't load any events");
                 BackgroundService.this.mUpdating = false;
-            } else if (response.data != 0) {
+            } else if (response.data.size() != 0) {
                 boolean needToUpdate = false;
                 char[] mAllDaysNewPattern = new char[288];
                 ArrayList<Byte> mNewAlerts = new ArrayList<>();

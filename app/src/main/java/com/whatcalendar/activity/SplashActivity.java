@@ -1,19 +1,20 @@
 package com.whatcalendar.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import butterknife.ButterKnife;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.whatcalendar.R;
 import com.whatcalendar.util.GlobalPreferences;
+
 import org.apache.commons.lang3.StringUtils;
 
 /* loaded from: classes.dex */
@@ -22,11 +23,11 @@ public class SplashActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1;
     private static final int WELCOME_SCREEN_REQUEST_CODE = 3;
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        ButterKnife.bind(this);
         startApplication();
     }
 
@@ -47,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override // android.support.v4.app.FragmentActivity, android.app.Activity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
             startApplication();
         }
@@ -69,7 +71,10 @@ public class SplashActivity extends AppCompatActivity {
             if (locationMode != 0) {
                 return true;
             }
-            new AlertDialog.Builder(this).setTitle(R.string.dialog_title_attention).setMessage(R.string.dialog_msg_location).setPositiveButton(17039370, SplashActivity$$Lambda$1.lambdaFactory$(this)).setCancelable(false).show();
+            new AlertDialog.Builder(this).setTitle(R.string.dialog_title_attention).setMessage(R.string.dialog_msg_location).setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                Intent enableLocationIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
+                startActivityForResult(enableLocationIntent, 2);
+            }).setCancelable(false).show();
             return false;
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
@@ -77,12 +82,8 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    public /* synthetic */ void lambda$checkLocation$0(DialogInterface dialog1, int which) {
-        Intent enableLocationIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
-        startActivityForResult(enableLocationIntent, 2);
-    }
-
-    @Override // android.support.v4.app.FragmentActivity, android.app.Activity, android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback
+    @Override
+    // android.support.v4.app.FragmentActivity, android.app.Activity, android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.d(getClass().getSimpleName(), "onRequestPermissionsResult");

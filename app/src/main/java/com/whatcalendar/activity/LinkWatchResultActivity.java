@@ -2,26 +2,32 @@ package com.whatcalendar.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityLinkWatchResultBinding;
 
 /* loaded from: classes.dex */
 public class LinkWatchResultActivity extends AppCompatActivity {
-    @Bind({R.id.result_text})
+    private ActivityLinkWatchResultBinding binding;
     TextView mTextResult;
-    @Bind({R.id.result_hint})
     TextView mTextResultHint;
     int state;
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityLinkWatchResultBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_link_watch_result);
-        ButterKnife.bind(this);
+
+        mTextResult = binding.resultText;
+        mTextResultHint = binding.resultHint;
+
+        binding.resultButton.setOnClickListener(view -> onOk());
+
         this.state = getIntent().getIntExtra("state", 0);
         if (this.state == 0) {
             this.mTextResult.setText(getString(R.string.error));
@@ -38,7 +44,6 @@ public class LinkWatchResultActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.result_button})
     public void onOk() {
         if (this.state == -1) {
             startActivity(new Intent(this, SplashActivity.class));

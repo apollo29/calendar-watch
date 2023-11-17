@@ -2,6 +2,7 @@ package com.whatcalendar.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
@@ -19,14 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,24 +29,34 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityWelcomeScreenBinding;
 import com.whatcalendar.fragment.FragmentCalibration;
 import com.whatcalendar.fragment.FragmentConnectWatch;
 import com.whatcalendar.fragment.FragmentGettingStarted;
 import com.whatcalendar.fragment.FragmentGuideWindow;
 import com.whatcalendar.fragment.FragmentResult;
 import com.whatcalendar.fragment.FragmentWebRegistration;
-import com.whatcalendar.fragment.FragmentWelcomeWindow;
 import com.whatcalendar.service.BackgroundService;
 import com.whatcalendar.util.GlobalPreferences;
 import com.whatcalendar.view.LockedViewPager;
+
 import me.relex.circleindicator.CircleIndicator;
 
 /* loaded from: classes.dex */
 public class WelcomeScreenActivity extends AppCompatActivity {
+    private ActivityWelcomeScreenBinding binding;
+
     public static final int ANIMATION_DURATION = 400;
     private static final int LOCATION_REQUEST_CODE = 2;
     public static final String ONLY_GUIDE = "only_guide";
@@ -62,29 +65,19 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     public static int connection_state = 0;
     public static boolean first_connection = true;
     private BackgroundService mBackgroundService;
-    @Bind({R.id.fragment_guide_layout})
     RelativeLayout mFragmentGuideLayout;
     FragmentTransaction mFragmentTransaction;
-    FragmentWelcomeWindow mFragmentWelcomeWindow;
-    @Bind({R.id.next_button})
+    //FragmentWelcomeWindow mFragmentWelcomeWindow;
     RelativeLayout mNextButton;
-    @Bind({R.id.next_button_text})
     TextView mNextButtonText;
-    @Bind({R.id.pair_watch_button_text})
     TextView mPairWatchButtonText;
-    @Bind({R.id.progress_pair_watch})
     ProgressBar mProgressPair;
     PagerAdapter mStartingPageAdapter;
-    @Bind({R.id.starting_viewPager})
     LockedViewPager mStartingViewPager;
-    @Bind({R.id.try_again_button_text})
     TextView mTryAgainButtonText;
-    @Bind({R.id.indicator})
     CircleIndicator mWelcomeFragmentIndicator;
     PagerAdapter mWelcomePagerAdapter;
-    @Bind({R.id.welcome_viewPager})
     ViewPager mWelcomeViewPager;
-    @Bind({R.id.fragment_welcome_window_layout})
     LinearLayout mWelcomeWindowLayout;
     Context mContext = null;
     private ServiceConnection mServiceConnection = new ServiceConnection() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.1
@@ -144,23 +137,40 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     };
 
     /* JADX INFO: Access modifiers changed from: protected */
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
-        ButterKnife.bind(this);
+        binding = ActivityWelcomeScreenBinding.inflate(getLayoutInflater());
+
         first_connection = true;
         this.mContext = this;
+
+        mFragmentGuideLayout = binding.fragmentGuideLayout;
+        mNextButton = binding.nextButton;
+        mNextButtonText = binding.nextButtonText;
+        mPairWatchButtonText = binding.pairWatchButtonText;
+        mProgressPair = binding.progressPairWatch;
+        mStartingViewPager = binding.startingViewPager;
+        mTryAgainButtonText = binding.tryAgainButtonText;
+        mWelcomeFragmentIndicator = binding.indicator;
+        mWelcomeViewPager = binding.welcomeViewPager;
+        mWelcomeWindowLayout = binding.fragmentWelcomeWindowLayout;
+
+        binding.imageXSign.setOnClickListener(view -> onXbuttonClicked());
+
         initViews();
     }
 
+    @SuppressLint("ValidFragment")
     private void initViews() {
         this.mWelcomePagerAdapter = new WelcomeFragmentPageAdapter(getSupportFragmentManager());
         this.mWelcomeViewPager.setAdapter(this.mWelcomePagerAdapter);
         this.mWelcomeFragmentIndicator.setViewPager(this.mWelcomeViewPager);
         if (getIntent().getBooleanExtra(ONLY_GUIDE, false)) {
             this.mFragmentGuideLayout.setAlpha(1.0f);
-            this.mFragmentGuideLayout.setVisibility(0);
+            this.mFragmentGuideLayout.setVisibility(View.VISIBLE);
             return;
         }
         DisplayMetrics metrics = new DisplayMetrics();
@@ -170,6 +180,7 @@ public class WelcomeScreenActivity extends AppCompatActivity {
         this.mStartingPageAdapter = new StartingFragmentPageAdapter(getSupportFragmentManager());
         this.mStartingViewPager.setAdapter(this.mStartingPageAdapter);
         this.mNextButton.setOnClickListener(this.onNextButtonClickListener);
+        /*
         this.mFragmentWelcomeWindow = new FragmentWelcomeWindow() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.2
             @Override // com.whatcalendar.fragment.FragmentWelcomeWindow
             public void onOkClicked() {
@@ -180,16 +191,17 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             showWelcomeWindow();
             return;
         }
+         */
         findViewById(R.id.logo_layout).setTranslationY(0.0f);
         findViewById(R.id.text_logo).setAlpha(0.0f);
         findViewById(R.id.main_background).setAlpha(1.0f);
         findViewById(R.id.image_logo).setScaleX(0.7f);
         findViewById(R.id.image_logo).setScaleY(0.7f);
         findViewById(R.id.fragment_starting_layout).setTranslationY(0.0f);
-        this.mWelcomeWindowLayout.setVisibility(8);
+        this.mWelcomeWindowLayout.setVisibility(View.GONE);
         this.mStartingViewPager.setCurrentItem(2, false);
-        this.mNextButtonText.setVisibility(4);
-        this.mPairWatchButtonText.setVisibility(0);
+        this.mNextButtonText.setVisibility(View.INVISIBLE);
+        this.mPairWatchButtonText.setVisibility(View.VISIBLE);
         this.mPairWatchButtonText.setAlpha(1.0f);
     }
 
@@ -201,9 +213,10 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     public void showGuideWindow() {
         GlobalPreferences.setFirstShowWelcome(false);
         this.mFragmentGuideLayout.animate().alpha(1.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.4
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationStart(Animator animation) {
-                WelcomeScreenActivity.this.mFragmentGuideLayout.setVisibility(0);
+                WelcomeScreenActivity.this.mFragmentGuideLayout.setVisibility(View.VISIBLE);
                 super.onAnimationStart(animation);
             }
         });
@@ -240,10 +253,11 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     private void showSuccessfulWindow() {
         this.mStartingViewPager.setCurrentItem(3, true);
         this.mNextButtonText.animate().alpha(1.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.5
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationStart(Animator animation) {
-                WelcomeScreenActivity.this.mProgressPair.setVisibility(4);
-                WelcomeScreenActivity.this.mNextButtonText.setVisibility(0);
+                WelcomeScreenActivity.this.mProgressPair.setVisibility(View.INVISIBLE);
+                WelcomeScreenActivity.this.mNextButtonText.setVisibility(View.VISIBLE);
                 WelcomeScreenActivity.this.mNextButton.setEnabled(true);
                 super.onAnimationStart(animation);
             }
@@ -253,10 +267,11 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     private void showErrorWindow() {
         this.mStartingViewPager.setCurrentItem(3, true);
         this.mTryAgainButtonText.animate().alpha(1.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.6
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationStart(Animator animation) {
-                WelcomeScreenActivity.this.mProgressPair.setVisibility(4);
-                WelcomeScreenActivity.this.mTryAgainButtonText.setVisibility(0);
+                WelcomeScreenActivity.this.mProgressPair.setVisibility(View.INVISIBLE);
+                WelcomeScreenActivity.this.mTryAgainButtonText.setVisibility(View.VISIBLE);
                 WelcomeScreenActivity.this.mNextButton.setEnabled(true);
                 super.onAnimationStart(animation);
             }
@@ -276,23 +291,25 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     public void startPairingWatch() {
         View view = getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService("input_method");
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
         this.mPairWatchButtonText.animate().alpha(0.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.7
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationStart(Animator animation) {
                 WelcomeScreenActivity.this.mNextButton.setEnabled(false);
             }
 
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationEnd(Animator animation) {
-                WelcomeScreenActivity.this.mPairWatchButtonText.setVisibility(4);
-                WelcomeScreenActivity.this.mProgressPair.setVisibility(0);
+                WelcomeScreenActivity.this.mPairWatchButtonText.setVisibility(View.INVISIBLE);
+                WelcomeScreenActivity.this.mProgressPair.setVisibility(View.VISIBLE);
             }
         });
         GlobalPreferences.setPairingMode(true);
-        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, 1);
+        bindService(new Intent(this, BackgroundService.class), this.mServiceConnection, Context.BIND_AUTO_CREATE);
         IntentFilter intentFilter = new IntentFilter(BackgroundService.ACTION_BATTERY_INFO);
         intentFilter.addAction(BackgroundService.ACTION_CONNECTION_STATE_CHANGE);
         LocalBroadcastManager.getInstance(this).registerReceiver(this.mBroadcastReceiver, intentFilter);
@@ -300,38 +317,41 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
     /* JADX INFO: Access modifiers changed from: private */
     /* renamed from: showWebRegistrationWindow */
-    public void showConnectWatchWindow() {
+    public void showWebRegistrationWindow() {
         if (!isOnline()) {
             showAlertMessage(getString(R.string.internet_connection_alert));
             return;
         }
-        this.mNextButton.setVisibility(8);
+        this.mNextButton.setVisibility(View.GONE);
         this.mStartingViewPager.setCurrentItem(1, true);
     }
 
     /* JADX INFO: Access modifiers changed from: private */
     public void showConnectWatchWindow() {
-        this.mNextButton.setVisibility(0);
+        this.mNextButton.setVisibility(View.VISIBLE);
         getWindow().setSoftInputMode(32);
         this.mStartingViewPager.setCurrentItem(2, true);
         this.mTryAgainButtonText.animate().alpha(0.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.8
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationEnd(Animator animation) {
-                WelcomeScreenActivity.this.mTryAgainButtonText.setVisibility(4);
+                WelcomeScreenActivity.this.mTryAgainButtonText.setVisibility(View.INVISIBLE);
                 super.onAnimationEnd(animation);
             }
         });
         this.mNextButtonText.animate().alpha(0.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.9
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationEnd(Animator animation) {
-                WelcomeScreenActivity.this.mNextButtonText.setVisibility(4);
+                WelcomeScreenActivity.this.mNextButtonText.setVisibility(View.INVISIBLE);
                 super.onAnimationEnd(animation);
             }
         });
         this.mPairWatchButtonText.animate().alpha(1.0f).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.10
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationStart(Animator animation) {
-                WelcomeScreenActivity.this.mPairWatchButtonText.setVisibility(0);
+                WelcomeScreenActivity.this.mPairWatchButtonText.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -353,7 +373,7 @@ public class WelcomeScreenActivity extends AppCompatActivity {
                 alert_dialog.dismiss();
             }
         });
-        alert_dialog.findViewById(R.id.cancel_button).setVisibility(0);
+        alert_dialog.findViewById(R.id.cancel_button).setVisibility(View.VISIBLE);
         alert_dialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.12
             @Override // android.view.View.OnClickListener
             public void onClick(View v) {
@@ -387,9 +407,11 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
+    /*
     public void hideWelcomeWindow() {
         this.mWelcomeWindowLayout.animate().translationY(getResources().getDimension(R.dimen.welcome_window_size)).setDuration(400L).setListener(new AnimatorListenerAdapter() { // from class: com.whatcalendar.activity.WelcomeScreenActivity.14
-            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            @Override
+            // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
             public void onAnimationEnd(Animator animation) {
                 WelcomeScreenActivity.this.mFragmentTransaction = WelcomeScreenActivity.this.getFragmentManager().beginTransaction();
                 WelcomeScreenActivity.this.mFragmentTransaction.remove(WelcomeScreenActivity.this.mFragmentWelcomeWindow);
@@ -405,18 +427,16 @@ public class WelcomeScreenActivity extends AppCompatActivity {
         this.mFragmentTransaction = getFragmentManager().beginTransaction();
         this.mFragmentTransaction.add(R.id.fragment_welcome_window_layout, this.mFragmentWelcomeWindow);
         this.mFragmentTransaction.commit();
-        getWindow().getDecorView().postDelayed(WelcomeScreenActivity$$Lambda$1.lambdaFactory$(this), 1500L);
+        getWindow().getDecorView().postDelayed(() -> {
+            this.mWelcomeWindowLayout.animate().translationY(0.0f).setDuration(400L);
+            this.mWelcomeWindowLayout.animate().alpha(1.0f).setDuration(400L);
+            findViewById(R.id.main_background).setBackgroundColor(getResources().getColor(R.color.main_background));
+        }, 1500L);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$showWelcomeWindow$0() {
-        this.mWelcomeWindowLayout.animate().translationY(0.0f).setDuration(400L);
-        this.mWelcomeWindowLayout.animate().alpha(1.0f).setDuration(400L);
-        findViewById(R.id.main_background).setBackgroundColor(getResources().getColor(R.color.main_background));
-    }
+     */
 
     /* JADX INFO: Access modifiers changed from: package-private */
-    @OnClick({R.id.image_x_sign})
     public void onXbuttonClicked() {
         if (getIntent().getBooleanExtra(ONLY_GUIDE, false)) {
             finish();
@@ -470,7 +490,7 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService("connectivity");
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
@@ -498,7 +518,8 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     }
 
     /* JADX INFO: Access modifiers changed from: protected */
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
     public void onDestroy() {
         super.onDestroy();
         try {

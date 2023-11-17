@@ -2,8 +2,8 @@ package com.whatcalendar.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -52,17 +52,14 @@ public class FragmentConnectWatch extends Fragment {
         View view = super.getView();
         if (WelcomeScreenActivity.first_connection) {
             GlobalPreferences.putTempWatchId("");
-            view.findViewById(R.id.first_pair_layout).setVisibility(0);
-            view.findViewById(R.id.second_pair_layout).setVisibility(8);
+            view.findViewById(R.id.first_pair_layout).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.second_pair_layout).setVisibility(View.GONE);
         } else {
-            getActivity().getWindow().getDecorView().postDelayed(FragmentConnectWatch$$Lambda$1.lambdaFactory$(view), 500L);
+            getActivity().getWindow().getDecorView().postDelayed(() -> {
+                view.findViewById(R.id.first_pair_layout).setVisibility(View.GONE);
+                view.findViewById(R.id.second_pair_layout).setVisibility(View.VISIBLE);
+            }, 500L);
         }
         return view;
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ void lambda$getView$0(View view) {
-        view.findViewById(R.id.first_pair_layout).setVisibility(8);
-        view.findViewById(R.id.second_pair_layout).setVisibility(0);
     }
 }

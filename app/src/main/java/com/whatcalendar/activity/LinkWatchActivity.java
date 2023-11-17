@@ -7,24 +7,27 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.whatcalendar.R;
+import com.whatcalendar.databinding.ActivityLinkWatchBinding;
 import com.whatcalendar.service.BackgroundService;
 import com.whatcalendar.util.GlobalPreferences;
+
 import org.apache.commons.lang3.StringUtils;
 
 /* loaded from: classes.dex */
 public class LinkWatchActivity extends AppCompatActivity {
     private static final String TAG = LinkWatchActivity.class.getSimpleName();
+    private ActivityLinkWatchBinding binding;
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() { // from class: com.whatcalendar.activity.LinkWatchActivity.1
         @Override // android.content.BroadcastReceiver
         public void onReceive(Context context, Intent intent) {
@@ -43,29 +46,31 @@ public class LinkWatchActivity extends AppCompatActivity {
             }
         }
     };
-    @Bind({R.id.button_pair_watch})
     Button mButtonPair;
-    @Bind({R.id.edit_watch_id})
     EditText mEditWatchId;
-    @Bind({R.id.progress_pair_watch})
     ProgressBar mProgressPair;
-    @Bind({R.id.text_hint_watch_id})
     TextView mTextHintWatchId;
-    @Bind({R.id.text_terms})
     TextView mTextTerms;
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.support.v4.app.BaseFragmentActivityGingerbread, android.app.Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_link_watch);
-        ButterKnife.bind(this);
+        binding = ActivityLinkWatchBinding.inflate(getLayoutInflater());
+        mButtonPair = binding.buttonPairWatch;
+        mEditWatchId = binding.editWatchId;
+        mProgressPair = binding.progressPairWatch;
+        mTextHintWatchId = binding.textHintWatchId;
+        mTextTerms = binding.textTerms;
+        binding.buttonPairWatch.setOnClickListener(view -> onPairWatch());
+        binding.textTerms.setOnClickListener(view -> openWebView());
         this.mProgressPair.getIndeterminateDrawable().setColorFilter(-7829368, PorterDuff.Mode.MULTIPLY);
         if (!StringUtils.isEmpty(GlobalPreferences.getTempWatchId()) && !GlobalPreferences.getTempWatchId().equals("")) {
             this.mEditWatchId.setText(GlobalPreferences.getTempWatchId());
         }
     }
 
-    @OnClick({R.id.button_pair_watch})
     public void onPairWatch() {
         if (!isBtEnable()) {
             Intent startIntent = new Intent(this, LinkWatchResultActivity.class);
@@ -75,16 +80,16 @@ public class LinkWatchActivity extends AppCompatActivity {
             return;
         }
         CharSequence watchId = this.mEditWatchId.getText();
-        if (this.mProgressPair.getVisibility() == 0) {
-            this.mProgressPair.setVisibility(4);
-            this.mTextTerms.setVisibility(0);
-            this.mTextHintWatchId.setVisibility(0);
-            this.mButtonPair.setVisibility(0);
+        if (this.mProgressPair.getVisibility() == View.VISIBLE) {
+            this.mProgressPair.setVisibility(View.INVISIBLE);
+            this.mTextTerms.setVisibility(View.VISIBLE);
+            this.mTextHintWatchId.setVisibility(View.VISIBLE);
+            this.mButtonPair.setVisibility(View.VISIBLE);
         } else {
-            this.mProgressPair.setVisibility(0);
-            this.mTextTerms.setVisibility(4);
-            this.mTextHintWatchId.setVisibility(4);
-            this.mButtonPair.setVisibility(4);
+            this.mProgressPair.setVisibility(View.VISIBLE);
+            this.mTextTerms.setVisibility(View.INVISIBLE);
+            this.mTextHintWatchId.setVisibility(View.INVISIBLE);
+            this.mButtonPair.setVisibility(View.INVISIBLE);
         }
         GlobalPreferences.putTempWatchId(watchId.toString());
         GlobalPreferences.setPairingMode(true);
@@ -99,13 +104,13 @@ public class LinkWatchActivity extends AppCompatActivity {
         return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
     }
 
-    @Override // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
+    @Override
+    // android.support.v7.app.AppCompatActivity, android.support.v4.app.FragmentActivity, android.app.Activity
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(this.mBroadcastReceiver);
     }
 
-    @OnClick({R.id.text_terms})
     public void openWebView() {
         startActivity(WebViewActivity.newIntent(this, getString(R.string.info_terms_url), getString(R.string.info_terms)));
     }

@@ -57,7 +57,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.transition:transition-ktx:1.4.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 
     // google
     implementation("org.apache.commons:commons-lang3:3.12.0")

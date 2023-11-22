@@ -26,6 +26,7 @@ import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -78,8 +79,7 @@ class MainActivity : AppCompatActivity() {
         permissionRequest.send { result ->
             if (result.allGranted()) {
                 startService()
-            }
-            else {
+            } else {
                 Snackbar.make(
                     binding.root,
                     "No Permissions Granted, App can't be used",

@@ -183,9 +183,8 @@ class GattService : Service() {
 
         override fun setMyCharacteristicValue(value: String) {
             val bytes = value.toByteArray(StandardCharsets.UTF_8)
-            batteryLevel.value = bytes
             serverConnections.values.forEach { serverConnection ->
-                serverConnection.sendNotificationForMyGattCharacteristic(bytes)
+                serverConnection.updateMyGattCharacteristic(bytes)
             }
         }
 
@@ -231,9 +230,8 @@ class GattService : Service() {
          */
         inner class ServerConnection : BleManager(context) {
 
-            private var gattCallback: GattCallback? = null
-
-            fun sendNotificationForMyGattCharacteristic(value: ByteArray) {
+            fun updateMyGattCharacteristic(value: ByteArray) {
+                setCharacteristicValue(batteryLevel, value).enqueue()
                 sendNotification(batteryLevel, value).enqueue()
             }
 
@@ -241,22 +239,14 @@ class GattService : Service() {
                 this@ServerManager.log(priority, message)
             }
 
-            override fun getGattCallback(): BleManagerGattCallback {
-                gattCallback = GattCallback()
-                return gattCallback!!
+            // There are no services that we need from the connecting device, but
+            // if there were, we could specify them here.
+            override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
+                return true
             }
 
-            private inner class GattCallback : BleManagerGattCallback() {
-
-                // There are no services that we need from the connecting device, but
-                // if there were, we could specify them here.
-                override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
-                    return true
-                }
-
-                override fun onServicesInvalidated() {
-                    // This is the place to nullify characteristics obtained above.
-                }
+            override fun onServicesInvalidated() {
+                // This is the place to nullify characteristics obtained above.
             }
         }
     }

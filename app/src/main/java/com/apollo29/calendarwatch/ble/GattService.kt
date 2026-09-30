@@ -9,10 +9,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.apollo29.calendarwatch.BuildConfig
 import com.apollo29.calendarwatch.R
 import com.orhanobut.logger.Logger
@@ -48,7 +51,12 @@ class GattService : Service() {
             .setContentText(resources.getString(R.string.gatt_service_running_notification))
             .setAutoCancel(true)
 
-        startForeground(1, notification.build())
+        ServiceCompat.startForeground(
+            this,
+            1,
+            notification.build(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+        )
 
         // Observe OS state changes in BLE
 
@@ -68,11 +76,22 @@ class GattService : Service() {
                 }
             }
         }
-        registerReceiver(bluetoothObserver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+        ContextCompat.registerReceiver(
+            this,
+            bluetoothObserver,
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         // Startup BLE if we have it
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         if (bluetoothManager.adapter?.isEnabled == true) enableBleServices()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(bluetoothObserver)
+        disableBleServices()
     }
 
     override fun onBind(intent: Intent?): IBinder {

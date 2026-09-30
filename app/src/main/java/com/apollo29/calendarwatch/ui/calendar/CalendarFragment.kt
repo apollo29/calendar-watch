@@ -33,7 +33,6 @@ class CalendarFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         _binding = FragmentCalendarBinding.inflate(inflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

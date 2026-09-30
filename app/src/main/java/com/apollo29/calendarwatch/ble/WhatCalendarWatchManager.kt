@@ -432,26 +432,13 @@ class WhatCalendarWatchManager @Inject constructor(
 
     fun updateAlerts() {
         Logger.d("updateAlerts")
-        var alerts = ByteArray(20)
-        for (i in alerts.indices) {
-            if (i % 20 == 0) {
-                if (i > 0) {
-                    writeCharacteristic(
-                        alertsCharacteristic,
-                        alerts,
-                        BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                    ).enqueue()
-                }
-                alerts = ByteArray(20)
-                Arrays.fill(alerts, 0.toByte())
-            }
-            alerts[i % 20] = alerts[i]
+        AlertPackets.split(alerts).forEach { packet ->
+            writeCharacteristic(
+                alertsCharacteristic,
+                packet,
+                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            ).enqueue()
         }
-        writeCharacteristic(
-            alertsCharacteristic,
-            alerts,
-            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-        ).enqueue()
     }
 
     // endregion
@@ -623,11 +610,13 @@ class WhatCalendarWatchManager @Inject constructor(
                     val alertEndSector = eventEndSector
                     if (preferences.vibrateSwitch()) {
                         for ((_, _, minutes) in dtoEvent.alertsList) {
-                            if (alertIndex % 20 == 0) {
+                            if (alertIndex % AlertPackets.PACKET_SIZE == 0) {
+                                // every packet starts with a header, the alerts follow it
                                 mNewAlerts.add(0.toByte())
                                 mNewAlerts.add(java.lang.Byte.valueOf((currentDay[1] % 100).toByte()))
                                 mNewAlerts.add(java.lang.Byte.valueOf((currentDay[2] + 1).toByte()))
                                 mNewAlerts.add(java.lang.Byte.valueOf(currentDay[5].toByte()))
+                                alertIndex += 4
                             }
                             var alertStartMinute = eventStartMinute - minutes
                             if (alertStartMinute < 0) {

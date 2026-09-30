@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.apollo29.calendarwatch.BuildConfig
 import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.databinding.FragmentAboutBinding
+import com.apollo29.calendarwatch.ui.applyStatusBarInsetToToolbar
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 
 class AboutFragment : Fragment() {
 
@@ -25,6 +27,9 @@ class AboutFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.infoActivityToolbarTop.applyStatusBarInsetToToolbar()
+        binding.root.applySystemBarInsets(top = false)
+
 
         binding.toolbarIcon.setOnClickListener {
             findNavController().navigate(R.id.nav_main)

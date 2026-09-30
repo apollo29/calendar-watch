@@ -17,6 +17,7 @@ import com.apollo29.calendarwatch.databinding.DialogAlertBinding
 import com.apollo29.calendarwatch.databinding.FragmentSplashBinding
 import com.apollo29.calendarwatch.model.PairingStatus
 import com.apollo29.calendarwatch.ui.main.MainViewModel
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +41,8 @@ class SplashFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applySystemBarInsets()
+
 
         viewModel.pairing.observe(viewLifecycleOwner) {
             if (it == PairingStatus.SUCCESS) {

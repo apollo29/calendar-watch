@@ -14,6 +14,7 @@ import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.ble.GattService
 import com.apollo29.calendarwatch.databinding.FragmentGettingStartedBinding
 import com.apollo29.calendarwatch.ui.main.MainViewModel
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
@@ -43,6 +44,8 @@ class PairingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applySystemBarInsets()
+
 
         binding.buttonPair.setOnClickListener {
             it.isEnabled = false

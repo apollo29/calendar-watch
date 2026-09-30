@@ -15,6 +15,8 @@ import com.apollo29.calendarwatch.databinding.FragmentCalendarBinding
 import com.apollo29.calendarwatch.model.DTOCalendar
 import com.apollo29.calendarwatch.repository.Preferences
 import com.apollo29.calendarwatch.ui.main.MainViewModel
+import com.apollo29.calendarwatch.ui.applyStatusBarInsetToToolbar
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +40,9 @@ class CalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.calendarsActivityToolbarTop.applyStatusBarInsetToToolbar()
+        binding.root.applySystemBarInsets(top = false)
+
 
         binding.toolbarIcon.setOnClickListener {
             findNavController().navigate(R.id.nav_settings)

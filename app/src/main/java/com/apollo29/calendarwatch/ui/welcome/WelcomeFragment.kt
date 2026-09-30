@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.databinding.FragmentWelcomeBinding
 import com.apollo29.calendarwatch.ui.main.MainViewModel
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,6 +32,8 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applySystemBarInsets()
+
 
         viewModel.wasFirstShow()
 

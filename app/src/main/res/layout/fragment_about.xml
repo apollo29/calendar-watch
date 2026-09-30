@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_activity_background"
-    android:fitsSystemWindows="true">
+    android:background="@color/dark_activity_background">
 
     <RelativeLayout
         android:id="@+id/info_activity_toolbar_top"

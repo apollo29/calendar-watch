@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'com.google.devtools.ksp'
-    id 'de.nanogiants.android-versioning'
     id 'com.google.dagger.hilt.android'
     id 'androidx.navigation.safeargs.kotlin'
 }
@@ -9,6 +8,11 @@ plugins {
 base {
     archivesName = "what-calendar"
 }
+
+// versionCode = number of git commits (same as the former de.nanogiants.android-versioning plugin)
+def gitCommitCount = providers.exec {
+    commandLine 'git', 'rev-list', '--count', 'HEAD'
+}.standardOutput.asText.get().trim().toInteger()
 
 android {
     namespace = "com.apollo29.calendarwatch"
@@ -18,7 +22,7 @@ android {
         applicationId = "com.apollo29.calendarwatch"
         minSdk = 28
         targetSdk = 37
-        versionCode = versioning.getVersionCode()
+        versionCode = gitCommitCount
         versionName = "$version"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

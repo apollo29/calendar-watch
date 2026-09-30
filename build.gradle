@@ -9,7 +9,6 @@ buildscript {
         classpath 'com.android.tools.build:gradle:9.4.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20'
         classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.3.12'
-        classpath 'de.nanogiants:android-versioning:2.4.0'
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.60.1'
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.10.2'
     }

@@ -12,6 +12,8 @@ import com.apollo29.calendarwatch.databinding.DialogAlertBinding
 import com.apollo29.calendarwatch.databinding.DialogCalibrateBinding
 import com.apollo29.calendarwatch.databinding.DialogFixedModeBinding
 import com.apollo29.calendarwatch.databinding.FragmentSettingsBinding
+import com.apollo29.calendarwatch.ui.applyStatusBarInsetToToolbar
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +48,9 @@ class SettingsDialogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.settingsActivityToolbarTop.applyStatusBarInsetToToolbar()
+        binding.root.applySystemBarInsets(top = false)
+
 
         binding.toolbarIcon.setOnClickListener {
             findNavController().navigate(R.id.nav_main)

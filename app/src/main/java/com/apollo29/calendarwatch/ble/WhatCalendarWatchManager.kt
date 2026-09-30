@@ -82,10 +82,6 @@ class WhatCalendarWatchManager @Inject constructor(
         }
     }
 
-    override fun getGattCallback(): BleManagerGattCallback {
-        return WhatCalendarWatchManagerGattCallback()
-    }
-
     private val batteryLevelCallback: BatteryLevelDataCallback =
         object : BatteryLevelDataCallback() {
             override fun onInvalidDataReceived(device: BluetoothDevice, data: Data) {
@@ -414,75 +410,72 @@ class WhatCalendarWatchManager @Inject constructor(
     private fun Context.bluetoothAdapter(): BluetoothAdapter? =
         (this.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
 
-    /**
-     * BluetoothGatt callbacks object.
-     */
-    private inner class WhatCalendarWatchManagerGattCallback : BleManagerGattCallback() {
-        override fun initialize() {
-            setNotificationCallback(batteryLevelCharacteristic).with(batteryLevelCallback)
-            readCharacteristic(batteryLevelCharacteristic).with(batteryLevelCallback).enqueue()
-            enableNotifications(batteryLevelCharacteristic).enqueue()
+    // BluetoothGatt callbacks
 
-            setNotificationCallback(refreshCharacteristic).with(refreshCallback)
-            readCharacteristic(refreshCharacteristic).with(refreshCallback).enqueue()
-            enableNotifications(refreshCharacteristic).enqueue()
+    override fun initialize() {
+        setNotificationCallback(batteryLevelCharacteristic).with(batteryLevelCallback)
+        readCharacteristic(batteryLevelCharacteristic).with(batteryLevelCallback).enqueue()
+        enableNotifications(batteryLevelCharacteristic).enqueue()
 
-            setNotificationCallback(updateRequestCharacteristic).with(updateRequestCallback)
-            readCharacteristic(updateRequestCharacteristic).with(updateRequestCallback).enqueue()
-            enableNotifications(updateRequestCharacteristic).enqueue()
+        setNotificationCallback(refreshCharacteristic).with(refreshCallback)
+        readCharacteristic(refreshCharacteristic).with(refreshCallback).enqueue()
+        enableNotifications(refreshCharacteristic).enqueue()
+
+        setNotificationCallback(updateRequestCharacteristic).with(updateRequestCallback)
+        readCharacteristic(updateRequestCharacteristic).with(updateRequestCallback).enqueue()
+        enableNotifications(updateRequestCharacteristic).enqueue()
+    }
+
+    override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
+        // default service
+        val service = gatt.getService(UUID_SERVICE)
+        if (service != null) {
+            batteryLevelCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_BATTERY_LEVEL)
+            calibrateCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_CALIBRATE)
+            updateTimeCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_TIME)
+            flexibleModeCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_SWITCH_MODE)
+            airplaneModeCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_AIRPLANE_MODE)
+            acknowledgmentCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_ACKNOWLEDGMENT)
+            clearCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_CLEAR)
+            alertsCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_ALERTS)
+
+            patternCurrentCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_CURRENT_DAY)
+            patternTomorrowCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_TOMORROW)
+            patternDayAfterTomorrowCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW)
+
+            refreshCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_REFRESH)
+            updateRequestCharacteristic =
+                service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_REQUEST)
         }
+        return batteryLevelCharacteristic != null &&
+                calibrateCharacteristic != null &&
+                updateTimeCharacteristic != null &&
+                flexibleModeCharacteristic != null &&
+                airplaneModeCharacteristic != null &&
+                acknowledgmentCharacteristic != null &&
+                clearCharacteristic != null &&
+                alertsCharacteristic != null &&
+                patternCurrentCharacteristic != null &&
+                patternTomorrowCharacteristic != null &&
+                patternDayAfterTomorrowCharacteristic != null &&
+                refreshCharacteristic != null &&
+                updateRequestCharacteristic != null
+    }
 
-        public override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
-            // default service
-            val service = gatt.getService(UUID_SERVICE)
-            if (service != null) {
-                batteryLevelCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_BATTERY_LEVEL)
-                calibrateCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_CALIBRATE)
-                updateTimeCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_TIME)
-                flexibleModeCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_SWITCH_MODE)
-                airplaneModeCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_AIRPLANE_MODE)
-                acknowledgmentCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_ACKNOWLEDGMENT)
-                clearCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_CLEAR)
-                alertsCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_ALERTS)
-
-                patternCurrentCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_CURRENT_DAY)
-                patternTomorrowCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_TOMORROW)
-                patternDayAfterTomorrowCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_PATTERN_DAY_AFTER_TOMORROW)
-
-                refreshCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_REFRESH)
-                updateRequestCharacteristic =
-                    service.getCharacteristic(UUID_CHARACTERISTIC_UPDATE_REQUEST)
-            }
-            return batteryLevelCharacteristic != null &&
-                    calibrateCharacteristic != null &&
-                    updateTimeCharacteristic != null &&
-                    flexibleModeCharacteristic != null &&
-                    airplaneModeCharacteristic != null &&
-                    acknowledgmentCharacteristic != null &&
-                    clearCharacteristic != null &&
-                    alertsCharacteristic != null &&
-                    patternCurrentCharacteristic != null &&
-                    patternTomorrowCharacteristic != null &&
-                    patternDayAfterTomorrowCharacteristic != null &&
-                    refreshCharacteristic != null &&
-                    updateRequestCharacteristic != null
-        }
-
-        override fun onServicesInvalidated() {
-            batteryLevelCharacteristic = null
-        }
+    override fun onServicesInvalidated() {
+        batteryLevelCharacteristic = null
     }
 
     private inner class UpdatePatternsTask : Runnable {

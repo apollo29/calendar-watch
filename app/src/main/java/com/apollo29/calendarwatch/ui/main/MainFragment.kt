@@ -11,6 +11,7 @@ import com.apollo29.calendarwatch.R
 import com.apollo29.calendarwatch.databinding.FragmentMainBinding
 import com.apollo29.calendarwatch.model.BatteryInfo
 import com.apollo29.calendarwatch.model.BatteryInfo.Companion.CHARGING
+import com.apollo29.calendarwatch.ui.applySystemBarInsets
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +34,8 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applySystemBarInsets()
+
         updateBatteryView()
 
         viewModel.batteryLevel().observe(viewLifecycleOwner) {

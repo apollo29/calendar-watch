@@ -84,9 +84,6 @@ class MainActivity : AppCompatActivity() {
                 add(Manifest.permission.BLUETOOTH_SCAN)
                 add(Manifest.permission.BLUETOOTH_CONNECT)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                add(Manifest.permission.POST_NOTIFICATIONS)
-            }
         }.toTypedArray()
         if (!EasyPermissions.hasPermissions(this, *perm)) {
             // Do not have permissions, request them now

@@ -1,23 +1,17 @@
 package com.apollo29.calendarwatch.ble
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.bluetooth.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.apollo29.calendarwatch.BuildConfig
-import com.apollo29.calendarwatch.R
 import com.orhanobut.logger.Logger
 import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.BleServerManager
@@ -33,30 +27,6 @@ class GattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // Setup as a foreground service
-
-        val notificationChannel = NotificationChannel(
-            GattService::class.java.simpleName,
-            resources.getString(R.string.gatt_service_name),
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        val notificationService =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationService.createNotificationChannel(notificationChannel)
-
-        val notification = NotificationCompat.Builder(this, GattService::class.java.simpleName)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(resources.getString(R.string.gatt_service_name))
-            .setContentText(resources.getString(R.string.gatt_service_running_notification))
-            .setAutoCancel(true)
-
-        ServiceCompat.startForeground(
-            this,
-            1,
-            notification.build(),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-        )
 
         // Observe OS state changes in BLE
 

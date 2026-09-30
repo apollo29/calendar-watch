@@ -3,7 +3,10 @@ package com.apollo29.calendarwatch.ble
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import com.apollo29.calendarwatch.BuildConfig
 import com.apollo29.calendarwatch.model.BatteryInfo
@@ -11,11 +14,16 @@ import com.apollo29.calendarwatch.model.DTOEvent
 import com.apollo29.calendarwatch.model.DTOResponse
 import com.apollo29.calendarwatch.repository.CalendarLoader
 import com.apollo29.calendarwatch.repository.Preferences
+import com.apollo29.calendarwatch.sync.WatchSync
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import no.nordicsemi.android.ble.ConnectRequest
 import no.nordicsemi.android.ble.callback.profile.ProfileDataCallback
 import no.nordicsemi.android.ble.data.Data
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import no.nordicsemi.android.ble.ktx.suspend
 import no.nordicsemi.android.ble.livedata.ObservableBleManager
 import org.apache.commons.lang3.time.DateUtils
 import java.text.SimpleDateFormat
@@ -26,7 +34,7 @@ import kotlin.experimental.or
 
 @Singleton
 class WhatCalendarWatchManager @Inject constructor(
-    @ApplicationContext context: Context,
+    @ApplicationContext private val context: Context,
     val calendarLoader: CalendarLoader
 ) :
     ObservableBleManager(context) {
@@ -62,19 +70,7 @@ class WhatCalendarWatchManager @Inject constructor(
     private var alerts = ArrayList<Byte>()
     private val updatePatternsTask = UpdatePatternsTask()
     private var onTimeChanged = false
-
-    var eventsChangedCallback: EventsChangedCallback = object : EventsChangedCallback() {
-        override fun onEventsChanged() {
-            Logger.d("onEventsChanged")
-            updateAllDayPatterns()
-        }
-
-        override fun onTimeChanged() {
-            Logger.d("onTimeChanged")
-            onTimeChanged = true
-            updateAllDayPatterns()
-        }
-    }
+    private val backgroundSync = Mutex()
 
     override fun log(priority: Int, message: String) {
         if (BuildConfig.DEBUG || priority == Log.ERROR) {
@@ -135,7 +131,9 @@ class WhatCalendarWatchManager @Inject constructor(
                 .useAutoConnect(false)
                 .then {
                     preferences.watchId(it.name)
+                    preferences.watchAddress(it.address)
                     connectRequest = null
+                    WatchSync.schedule(context)
                 }
             connectRequest!!.enqueue()
         }
@@ -214,6 +212,65 @@ class WhatCalendarWatchManager @Inject constructor(
     fun updateAllDayPatterns() {
         updatePatternTask()
     }
+
+    /**
+     * Computes the patterns and alerts on the calling thread and enqueues the writes.
+     */
+    fun syncNow(timeChanged: Boolean = false) {
+        if (timeChanged) {
+            onTimeChanged = true
+        }
+        updatePatternsTask.run()
+    }
+
+    /**
+     * Sends the calendar to the watch without the app being open: connects to the last paired
+     * watch (unless the app is already connected), syncs and disconnects again.
+     *
+     * @return false if the watch could not be reached, true otherwise (also if there is nothing to do)
+     */
+    @SuppressLint("MissingPermission")
+    suspend fun syncInBackground(timeChanged: Boolean): Boolean = backgroundSync.withLock {
+        if (isConnected) {
+            log(Log.INFO, "Background sync: already connected")
+            syncNow(timeChanged)
+            return@withLock true
+        }
+        val address = preferences.watchAddress()
+        val adapter = bluetoothManager
+        if (address == null || adapter == null || !adapter.isEnabled || !hasConnectPermission()) {
+            log(Log.INFO, "Background sync: no paired watch, Bluetooth off or no permission")
+            return@withLock true
+        }
+        try {
+            connect(adapter.getRemoteDevice(address))
+                .useAutoConnect(false)
+                .retry(2, 500)
+                .timeout(BACKGROUND_CONNECT_TIMEOUT)
+                .suspend()
+            log(Log.INFO, "Background sync: connected")
+            syncNow(timeChanged)
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            log(Log.WARN, "Background sync: watch not reachable: ${e.message}")
+            false
+        } finally {
+            // Keep the connection if the app has taken it over in the meantime
+            if (device == null) {
+                // queued after the writes, so it completes once they are sent
+                runCatching { disconnect().suspend() }
+            }
+        }
+    }
+
+    private fun hasConnectPermission(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.BLUETOOTH_CONNECT
+                ) == PackageManager.PERMISSION_GRANTED
 
     fun updateCurrentDayPattern() {
         val value = updatePattern(
@@ -354,7 +411,9 @@ class WhatCalendarWatchManager @Inject constructor(
 
     fun forgetDevice() {
         preferences.watchId(null)
+        preferences.watchAddress(null)
         forgetDevice = true
+        WatchSync.cancel(context)
     }
 
     // endregion
@@ -479,6 +538,8 @@ class WhatCalendarWatchManager @Inject constructor(
     }
 
     private inner class UpdatePatternsTask : Runnable {
+        // runs from the app's own thread as well as from background sync
+        @Synchronized
         override fun run() {
             var eventStartMinute: Int
             var eventStartSector: Int
@@ -645,14 +706,11 @@ class WhatCalendarWatchManager @Inject constructor(
         }
     }
 
-    abstract class EventsChangedCallback {
-        abstract fun onEventsChanged()
-        abstract fun onTimeChanged()
-    }
-
     infix fun Byte.shl(that: Int): Int = this.toInt().shl(that)
 
     companion object {
+        private const val BACKGROUND_CONNECT_TIMEOUT = 30_000L
+
         // DEFAULT SERVICE
         val UUID_SERVICE =
             UUID.fromString("67E40001-5C68-D803-BF31-F83F2B6585FA")

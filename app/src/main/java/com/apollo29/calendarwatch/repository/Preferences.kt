@@ -24,6 +24,14 @@ class Preferences(context: Context) {
         return pref.getString(PREF_NAME_CONNECTED_WATCH_ID, null)
     }
 
+    fun watchAddress(address: String?) {
+        pref.edit().putString(PREF_NAME_CONNECTED_WATCH_ADDRESS, address).apply()
+    }
+
+    fun watchAddress(): String? {
+        return pref.getString(PREF_NAME_CONNECTED_WATCH_ADDRESS, null)
+    }
+
     fun pairingMode(enable: Boolean) {
         pref.edit()
             .putBoolean(PREF_NAME_PAIRING_MODE, enable)
@@ -176,6 +184,7 @@ class Preferences(context: Context) {
         private const val PREF_NAME_ALLDAY_EVENTS = "allday_events"
         private const val PREF_NAME_ALL_DAY_PATTERN = "all_day_pattern"
         private const val PREF_NAME_CALENDAR_ENABLED = "calendar_enabled_"
+        private const val PREF_NAME_CONNECTED_WATCH_ADDRESS = "connected_watch_address"
         private const val PREF_NAME_CONNECTED_WATCH_ID = "connected_watch_id"
         private const val PREF_NAME_FIRST_SHOW = "first_show"
         private const val PREF_NAME_FIXED_MODE_VALUE = "fixed_mode_value"

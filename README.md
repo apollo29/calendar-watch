@@ -28,7 +28,9 @@ Bluetooth Low Energy.
 - Pair a What? Calendar Watch via Bluetooth
 - Choose which of the phone's calendars are shown on the watch
 - Transfer appointments and alerts for today and the next two days
-- Automatic update when calendar events or the time/time zone change
+- Keeps the watch up to date in the background, also while the app is closed:
+  when calendar events or the time/time zone change, and every few hours
+  (via Android's WorkManager, no permanent notification)
 - Calibrate the watch hands, fixed mode and airplane mode
 - Battery level of the watch
 

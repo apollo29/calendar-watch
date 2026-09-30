@@ -39,8 +39,7 @@ Bluetooth Low Energy.
 - Bluetooth enabled
 
 On first start the app asks for access to your calendars, Bluetooth ("Nearby
-devices"), location (needed for Bluetooth scanning on older Android versions)
-and notifications.
+devices") and location (needed for Bluetooth scanning on older Android versions).
 
 ## Building
 

@@ -37,7 +37,6 @@ class PairingFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         _binding = FragmentGettingStartedBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

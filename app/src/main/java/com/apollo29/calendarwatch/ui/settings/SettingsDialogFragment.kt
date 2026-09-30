@@ -41,7 +41,6 @@ class SettingsDialogFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(requireActivity())[SettingsDialogViewModel::class.java]
         _binding = FragmentSettingsBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

@@ -4,8 +4,12 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.apollo29.calendarwatch.ble.DeviceAPI
 import com.apollo29.calendarwatch.ble.GattService
@@ -26,6 +30,11 @@ class MainActivity : AppCompatActivity() {
     var gattServiceConn: GattServiceConn? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Edge-to-edge is enforced from Android 15 on; keep light system bar icons on the dark background
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,13 +73,21 @@ class MainActivity : AppCompatActivity() {
 
     @AfterPermissionGranted(RC_APP)
     private fun requirePermission() {
-        val perm = arrayOf(
+        val perm = mutableListOf(
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ).apply {
+            // runtime Bluetooth permissions only exist from Android 12 on
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                add(Manifest.permission.BLUETOOTH_ADVERTISE)
+                add(Manifest.permission.BLUETOOTH_SCAN)
+                add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }.toTypedArray()
         if (!EasyPermissions.hasPermissions(this, *perm)) {
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(

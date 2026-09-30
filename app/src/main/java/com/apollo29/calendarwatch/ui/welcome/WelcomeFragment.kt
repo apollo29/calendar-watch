@@ -26,7 +26,6 @@ class WelcomeFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         _binding = FragmentWelcomeBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

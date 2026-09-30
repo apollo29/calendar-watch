@@ -28,7 +28,6 @@ class MainFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         _binding = FragmentMainBinding.inflate(inflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

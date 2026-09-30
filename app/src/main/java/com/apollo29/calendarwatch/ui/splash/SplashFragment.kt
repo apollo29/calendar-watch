@@ -35,7 +35,6 @@ class SplashFragment : Fragment() {
     ): View {
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         _binding = FragmentSplashBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

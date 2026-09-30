@@ -20,7 +20,6 @@ class AboutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAboutBinding.inflate(inflater)
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
